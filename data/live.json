@@ -11,6 +11,16 @@
    ],
    "synopsis": "Popatlal rushes to Abdul’s store to buy matches, but gets delayed by another customer who struggles to recall the names of simple grocery items and describes them in riddles.",
    "title": "क्या Popatlal Time Par लगा पाएगा दिया!"
+  },
+  "4878": {
+   "added": "2026-11-26",
+   "aired": "2026-11-26",
+   "cast": [
+    "Popatlal",
+    "Abdul"
+   ],
+   "synopsis": "The Mahila Mandal rushes to his apartment to clean up, set the living room, and prepare refreshments, while Popatlal quickly runs out to Abdul's shop for tea milk.",
+   "title": "Popatlal par टूटा मुसीबतों का पहाड़!"
   }
  },
  "links": {
@@ -37,6 +47,13 @@
     "kind": "highlights",
     "label": "Sony SAB",
     "minutes": 10
+   },
+   {
+    "added": "2026-11-26",
+    "id": "iFv2-MrD7-w",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 21
    }
   ],
   "4860": [
@@ -334,6 +351,22 @@
     "minutes": 10
    }
   ],
+  "4878": [
+   {
+    "added": "2026-11-26",
+    "id": "l1lT-65Zzqo",
+    "kind": "highlights",
+    "label": "Official channel",
+    "minutes": 9
+   },
+   {
+    "added": "2026-11-26",
+    "id": "6O5_CiHabrk",
+    "kind": "highlights",
+    "label": "Sony SAB",
+    "minutes": 0
+   }
+  ],
   "601": [
    {
     "added": "2026-11-26",
@@ -383,6 +416,6 @@
    }
   ]
  },
- "updated": "2026-11-26T13:45Z",
+ "updated": "2026-11-26T16:28Z",
  "v": 1
 }
