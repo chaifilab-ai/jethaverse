@@ -2,6 +2,14 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.8.1] — 2026-11-26
+
+### Changed
+
+- **The small print is back at the bottom of the Episodes list** ("Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers."). It is not under My list or the Watched / Saved filters.
+- **Get in touch now holds only** "Born out of love for Jethalal ♥", "Get in touch:" and the email button (plus the install button, when the app can be installed).
+- **The row of characters at the bottom of Get in touch is everyone except Jethalal** (he is the big picture above): Daya, Tapu, Bapuji, Babita, Iyer, Bhide, Sodhi, Popatlal, Goli, Sundar and Nattu Kaka, in the order of the windows, all the same height. It fits phones from 360 px wide; a little overlap lets all 11 fit.
+
 ## [3.8.0] — 2026-11-26
 
 A "Get in touch" tab.

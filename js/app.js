@@ -55,7 +55,9 @@
   /* ---------- the Get in touch page ---------- */
   var MAIL = "chaifilab@gmail.com";
   function aboutHTML() {
-    var crew = ["tapu_wave", "daya_heart", "babita_heart", "bapuji_laugh", "goli_cheer"].map(function (p) { return sticker(p, 90); }).join("");
+    // everyone but Jethalal (he is the big picture above), in the order of the windows; the pictures are all the same height
+    var crew = ["daya_heart", "tapu_wave", "bapuji_arms", "babita_heart", "iyer_plead", "bhide_arms", "sodhi_laugh", "popat_welcome", "goli_ok", "sundar_heart", "nattu_namaste"]
+      .map(function (p) { return sticker(p, 90).replace("<img", '<img loading="lazy"'); }).join("");
     return '<section class="about" aria-label="Get in touch">' +
       '<button class="linkbtn about-back" data-act="back">' + icon("prev") + " Back to episodes</button>" +
       '<div class="about-hero">' + sticker("hero", 260) + "</div>" +
@@ -65,7 +67,6 @@
       '<a class="btn go about-mail" href="mailto:' + MAIL + '">' + icon("mail") + " " + MAIL + "</a>" +
       '<button class="btn ghost about-install" data-act="install" hidden>' + icon("install") + " Install JethaVerse as an app</button>" +
       (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
-      '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>' +
       "</div>" +
       '<div class="about-crew">' + crew + "</div></section>";
   }
@@ -393,7 +394,9 @@
       var f = curFilter();
       var reset = (f === "watched" || f === "saved") && cur.items.length
         ? '<button class="linkbtn" data-act="reset">' + (state.armed ? "Tap again to clear " + cur.items.length : "Clear " + f + " list") + "</button> " : "";
-      return reset ? '<div class="foot">' + reset + "</div>" : "";
+      var own = f === "watched" || f === "saved";
+      var fine = own ? "" : '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>';
+      return reset || fine ? '<div class="foot">' + reset + fine + "</div>" : "";
     }
     function renderResults(animate) {
       var r = cur.r, items = cur.items;
