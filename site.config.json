@@ -1,4 +1,5 @@
 {
   "liveUrl": "https://raw.githubusercontent.com/chaifilab-ai/jethaverse/main/data/live.json",
-  "_note": "liveUrl = where the one-file version (dist/JethaVerse.html) asks for new episodes and replaced links. It points at data/live.json in the GitHub project, which the scheduled job keeps current; that address stays the same whatever domain the site is shown under. Empty = do not ask."
+  "_note": "liveUrl = where the one-file version (dist/JethaVerse.html) asks for new episodes and replaced links. It points at data/live.json in the GitHub project, which the scheduled job keeps current; that address stays the same whatever domain the site is shown under. Empty = do not ask. siteUrl = the guide's own address, used for the link preview (the picture and title WhatsApp shows when the link is shared).",
+  "siteUrl": "https://jethaverse.com"
 }

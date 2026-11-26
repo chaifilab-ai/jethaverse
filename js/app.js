@@ -30,6 +30,25 @@
     k: "From the description and short clips of this episode, so others may be in it. A name with a ? was only heard once."
   };
 
+  /* ---------- installing as an app ----------
+   * The website can be installed (Chrome on Android: its own "Install" prompt; this button asks the same thing). The
+   * browser announces that it can with "beforeinstallprompt"; that can arrive before the screen is built, so it is kept. */
+  var installEvent = null;
+  var installable = /^https?:$/.test(location.protocol) && !CFG.noHash;  // not the one-file copy, not a hosted frame
+  function standalone() { return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
+  function syncInstall() { var b = document.querySelector('[data-act="install"]'); if (b) b.hidden = !(installEvent && !standalone()); }
+  if (installable) {
+    window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvent = e; syncInstall(); });
+    window.addEventListener("appinstalled", function () { installEvent = null; syncInstall(); });
+  }
+  function installApp() {
+    if (!installEvent) return;
+    var e = installEvent; installEvent = null; syncInstall();  // a prompt can be shown once; the browser sends a new event if they say no
+    e.prompt();
+  }
+  // iPhone and iPad have no install prompt: Safari's Share menu has "Add to Home Screen"
+  function iosHint() { return installable && /iPhone|iPad|iPod/.test(navigator.userAgent || "") && !standalone() ? "To install this on an iPhone: tap Share, then Add to Home Screen." : ""; }
+
   /* ---------- small helpers ---------- */
   function $(sel, el) { return (el || app).querySelector(sel); }
   function $$(sel, el) { return Array.prototype.slice.call((el || app).querySelectorAll(sel)); }
@@ -239,7 +258,8 @@
     app.innerHTML =
       '<div class="sky"></div><div class="stars">' + stars + '</div><img class="buddy" src="assets/stickers/welcome.webp" alt="" width="280" height="280">' +
       '<header class="appbar"><div class="brand">JethaVerse<small>Find any Taarak Mehta episode</small></div>' +
-      '<div class="bar-actions"><button class="iconbtn" data-act="surprise" aria-label="Surprise me: pick a random episode">' + icon("dice") + "</button>" +
+      '<div class="bar-actions"><button class="iconbtn" data-act="install" aria-label="Install JethaVerse as an app" title="Install as an app" hidden>' + icon("install") + "</button>" +
+      '<button class="iconbtn" data-act="surprise" aria-label="Surprise me: pick a random episode">' + icon("dice") + "</button>" +
       '<button class="iconbtn" data-act="night" aria-pressed="false" aria-label="Switch to night">' + icon("moon") + "</button></div></header>" +
       '<form class="search" role="search" onsubmit="return false">' + icon("search") +
       '<input id="q" type="search" placeholder="Search: Jethalal, Goli, London, Chai…" autocomplete="off" enterkeyhint="search" aria-label="Search all ' + fmt(D0.episodes.length) + ' episodes by who is in them or what happens">' +
@@ -354,6 +374,7 @@
       return '<div class="foot">' + reset +
         '<p class="love">Born out of love for Jethalal <span class="heart" aria-hidden="true">\u2665</span></p>' +
         '<p class="touch">Get in touch: <a href="mailto:chaifilab@gmail.com">chaifilab@gmail.com</a></p>' +
+        (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
         '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. An unofficial fan guide. Episode text is from SonyLIV; videos and their pictures are from the YouTube channels shown. Not affiliated with the show or its makers.' + fresh + "</p></div>";
     }
     function renderResults(animate) {
@@ -660,6 +681,7 @@
         case "list": go("list"); break;
         case "more": state.limit += PAGE; var y = getY(); renderResults(false); setY(y); savePlace(); break;
         case "surprise": surprise(); break;
+        case "install": installApp(); break;
         case "night": state.night = !state.night; save(KEY.night, state.night); setNight(); break;
         case "reset":
           if (!state.armed) { state.armed = true; a.textContent = "Tap again to clear " + cur.items.length; setTimeout(function () { state.armed = false; var b2 = $('[data-act="reset"]'); if (b2) b2.textContent = "Clear " + curFilter() + " list"; }, 4000); break; }
@@ -730,6 +752,7 @@
       var y = getY(); renderResults(false); setY(y);
       var open = state.open && byN.get(state.open); if (open && !rating) paintRate(open);
     }).catch(function () { /* offline: the stars on the device stay */ });
+    syncInstall();
     openDoors();
     writeNav(false);
     if (restoreY && state.view !== "home") requestAnimationFrame(function () { window.scrollTo(0, restoreY); });

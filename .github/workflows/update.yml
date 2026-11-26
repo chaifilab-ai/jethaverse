@@ -80,7 +80,6 @@ jobs:
       - name: Build the site
         if: steps.save.outputs.publish == 'true'
         run: |
-          pip install --quiet pillow
           python tools/build_site.py
 
       - uses: actions/upload-pages-artifact@v3

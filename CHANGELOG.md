@@ -2,6 +2,22 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.7.0] — 2026-11-26
+
+Installable app, with the JethaVerse logo (the pink shirt in the navy stitched circle).
+
+### Added
+
+- **Install it as an app.** On Android, Chrome offers "Install app" for https://jethaverse.com (menu, or the small install button in the top bar of the home screen); it then sits in the app drawer with the logo and opens full screen with no browser bar. On iPhone: Share, then Add to Home Screen (the page says so at the end of the list).
+- **Opens with no connection.** `sw.js` (from `tools/sw.js`) keeps a copy of the whole site on the phone after the first visit: page, scripts, the episode list, the pictures. New episodes and replaced links still arrive when it is online; videos still need the internet. A new version of the site is fetched in the background and shows on the visit after.
+- **The logo everywhere:** the app icon (plain and Android-cropped versions, iPhone home-screen icon), the browser-tab icon, and the picture WhatsApp shows when the link is shared. `tools/make_icons.py` cuts them out of `assets/icons/logo-source.png`.
+
+### Changed
+
+- `tools/build_site.py` no longer draws a placeholder icon; it copies the real ones and writes the manifest (name, colours, four icons) and the service worker.
+- The job no longer installs Pillow (nothing needs it any more).
+- Ratings (3.6.0) stay switched off; there is no database and none is planned.
+
 ## [3.6.0] — 2026-11-26
 
 Shared star ratings. Built and tested; they stay hidden until the guide is given a database (see `docs/OPERATIONS.md`, "Shared ratings").

@@ -100,6 +100,16 @@ Two scripts keep the list fresh. They only write `data/live.json` (the changes) 
 - **Folding the changes in:** the file can grow for years (about 150 bytes per link). When the catalogue is rebuilt from the pipeline, the same links come in through the normal route and `data/live.json` can be emptied.
 - **Safety rules in the scripts:** a new episode number must be at most 40 past the newest known one and come from the official channel or Sony SAB; a video counts as full-length only at 15 minutes or more (17 to 23 is normal) and at most 40; one run in which more than 5% of links answer "gone" is treated as a broken run and changes nothing; a network error never counts against a link.
 
+## Installing as an app
+
+The website is a "progressive web app": `manifest.webmanifest` (name, colours, icons) and `sw.js` (offline copy) are written by `tools/build_site.py`, so every deploy has them. Nothing to do by hand.
+
+- **Icons:** `assets/icons/` holds the logo picture (`logo-source.png`) and what is made from it: `icon-192/512.png` (the circle), `maskable-192/512.png` (the circle on a navy square, small enough for Android to crop to any shape), `apple-touch-icon.png`. To change the logo: `python tools/make_icons.py path/to/new-logo.png`, then also paste `assets/icons/favicon.b64` into the `<link rel="icon">` line of `index.html`, and build.
+- **Offline copy:** `tools/sw.js` is the template. `build_site.py` lists every file of the site into it and stamps a version (a hash of those files). Files change -> new version -> phones fetch the new copy in the background (about 5 MB; the daily job's changes to `data/live.json` do not count, so they cost nothing). `data/live.json` is always asked for first and the last copy kept for offline. Google Fonts are kept after the first visit.
+- **What installs:** only the website at https://jethaverse.com. The one-file `JethaVerse.html` is a plain file and cannot be installed; it carries no service worker and shows no install button.
+- **Checking it:** open the site in Chrome, DevTools -> Application -> Manifest (should list four icons, no warnings) and Service Workers (activated). Offline test: tick "Offline" in DevTools -> Network and reload.
+- **Known limits:** a visit right after a deploy still shows the previous version once (the new one downloads meanwhile). iPhone has no install prompt (Share -> Add to Home Screen). Chrome only shows its own install prompt to people who have not installed it already.
+
 ## Shared ratings
 
 Visitors rate episodes 1 to 5 stars; everyone sees the average. The data lives in a Firebase Realtime Database that the app talks to with plain web requests (`js/ratings.js`; no Firebase library is loaded).

@@ -11,3 +11,5 @@ assets/*_sheet_source.png
 node_modules/
 __pycache__/
 *.tmp
+assets/icons/logo.png
+assets/icons/favicon.png
