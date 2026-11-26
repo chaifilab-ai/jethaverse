@@ -134,8 +134,12 @@ def main():
         if deep:
             have = {i["id"] for i in items}
             items += [i for i in C.deep_list(ch["id"], deep) if i["id"] not in have]
+        secs = C.lengths(ch["id"]) if items else {}
+        for it in items:
+            if not it.get("seconds") and it["id"] in secs:
+                it["seconds"] = secs[it["id"]]
         feeds[ch["key"]] = items
-        print("%-16s %3d uploads read" % (ch["label"], len(items)))
+        print("%-16s %3d uploads read, length known for %d" % (ch["label"], len(items), sum(1 for i in items if i.get("seconds"))))
     before = (len(live["links"]), len(live["episodes"]), len(state["seen"]))
     changes = sync(base, live, state, feeds)
     print("%d change(s)" % len(changes))

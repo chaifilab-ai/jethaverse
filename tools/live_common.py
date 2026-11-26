@@ -142,6 +142,37 @@ def feed(channel_id):
     return items if ok else None
 
 
+BADGE = re.compile(r'thumbnailBadgeViewModel":\{"text":"((?:\d{1,2}:)?\d{1,2}:\d\d)"')
+THUMB = re.compile(r'i\.ytimg\.com/vi/([\w-]{11})/')
+
+
+def parse_lengths(page):
+    """{video id: seconds} from a YouTube playlist page: each row shows the video's thumbnail and, on it, its length."""
+    out = {}
+    for m in BADGE.finditer(page):
+        ids = THUMB.findall(page[max(0, m.start() - 4000):m.start()])
+        if not ids:
+            continue
+        sec = 0
+        for part in m.group(1).split(":"):
+            sec = sec * 60 + int(part)
+        out.setdefault(ids[-1], sec)
+    return out
+
+
+def lengths(channel_id):
+    """How long the channel's newest uploads run, read from its two upload playlists (100 newest long videos, 100 newest
+    of any kind). YouTube shows these pages to machines it refuses the video pages to (cloud servers), so the scheduled
+    job gets its lengths here. Returns {} when the pages cannot be read; the video page is then tried instead."""
+    out = {}
+    for prefix in ("UULF", "UU"):
+        status, body = http_get("https://www.youtube.com/playlist?list=" + prefix + channel_id[2:])
+        if status == 200:
+            for vid, sec in parse_lengths(body.decode("utf-8", "replace")).items():
+                out.setdefault(vid, sec)
+    return out
+
+
 def deep_list(channel_id, count):
     """Optional: the newest `count` uploads (id, title, length) through yt-dlp, for runs that want to look further back
     than the feed's 15. Returns [] when yt-dlp is not installed or the listing fails."""

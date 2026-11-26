@@ -62,6 +62,13 @@ class Titles(unittest.TestCase):
         self.assertEqual(C.decide_kind(full, 0), "full")       # length unreadable: only a title that says "full" is trusted
         self.assertIsNone(C.decide_kind({"kind": "full", "sure": False}, 0))
 
+    def test_lengths_from_a_playlist_page(self):
+        row = ('{"url":"https://i.ytimg.com/vi/%s/hqdefault.jpg?sqp=x","width":336}]},"overlays":[{"thumbnailBottomOverlayViewModel":'
+               '{"badges":[{"thumbnailBadgeViewModel":{"text":"%s","badgeStyle":"X"}}]}}]')
+        page = row % ("AAAAAAAAAAA", "19:42") + row % ("BBBBBBBBBBB", "1:02:03") + row % ("CCCCCCCCCCC", "0:41")
+        self.assertEqual(C.parse_lengths(page), {"AAAAAAAAAAA": 1182, "BBBBBBBBBBB": 3723, "CCCCCCCCCCC": 41})
+        self.assertEqual(C.parse_lengths("nothing here"), {})
+
     def test_descriptions(self):
         official = ("Click here to Subscribe to Taarak Mehta Ka Ooltah Chashmah Official Channel: https://www.youtube.com/x\n\n"
                     "Popatlal rushes to Abdul's store to buy matches, but gets delayed by another customer.\n\n"
