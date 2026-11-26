@@ -1,4 +1,4 @@
 {
-  "liveUrl": "",
-  "_note": "liveUrl = the hosted guide's address of data/live.json, e.g. https://NAME.github.io/jethaverse/data/live.json. tools/build_single.py packs it into dist/JethaVerse.html so the one-file version can ask for new episodes and replaced links."
+  "liveUrl": "https://raw.githubusercontent.com/chaifilab-ai/jethaverse/main/data/live.json",
+  "_note": "liveUrl = where the one-file version (dist/JethaVerse.html) asks for new episodes and replaced links. It points at data/live.json in the GitHub project, which the scheduled job keeps current; that address stays the same whatever domain the site is shown under. Empty = do not ask."
 }

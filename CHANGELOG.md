@@ -2,6 +2,21 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.5.1] — 2026-11-26
+
+The guide is live and updating itself.
+
+### Added
+
+- **Published.** The project is at github.com/chaifilab-ai/jethaverse and the site at https://chaifilab-ai.github.io/jethaverse/. The scheduled job ran there for the first time today: it reads the three channels every 3 hours, checks links once a day, and republishes.
+- **The one-file version now updates itself.** `site.config.json` points it at `data/live.json` in the GitHub project, so a phone that has `JethaVerse.html` picks up new episodes and replaced links whenever it is opened online.
+- `tools/probe.py`: a self-test that says whether the machine it runs on can read YouTube's feed, playlist pages, video pages and link check. The job runs it on manual runs.
+
+### Fixed
+
+- **Video lengths on GitHub's servers.** YouTube answers "sign in" when a cloud server asks for a video page, so the job could not read how long an upload runs. Lengths now come from the channel's upload playlist pages (`C.lengths`), which it does show; the video page is only a fallback.
+- A Hindi title printed to a Windows console that cannot show it stopped the run; it now prints "?" for those letters.
+
 ## [3.5.0] — 2026-11-26
 
 The guide now keeps itself current: new uploads are added and dead links are replaced without anyone touching it.
