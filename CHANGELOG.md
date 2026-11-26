@@ -2,6 +2,15 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.10.1] — 2026-11-26
+
+### Changed
+
+- **The list is called "Recommended"** (chip, "★ Recommended" badges and tag, "recommended" in the header). It holds the first eight picks: 30, 50, 225, 373, 387, 414, 554 and 881.
+- **Recommended shows the episodes in episode order**, like every other list (best match first when something is searched), not in the order the numbers were given.
+- The filter chips now size themselves to their words, so the longer label fits on a 360 px phone, and the sliding pill follows the chosen chip.
+- The search hint ("Search: Jethalal, London, Chai, 881…") uses slightly smaller type on phones under 380 px wide so it is not cut off.
+
 ## [3.10.0] — 2026-11-26
 
 ### Added

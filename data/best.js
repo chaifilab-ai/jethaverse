@@ -1,12 +1,11 @@
-/* The "Best" list: episodes picked by hand. This is the only file to edit.
+/* The "Recommended" list: episodes picked by hand. This is the only file to edit.
  *
- *   label     the word shown on the filter chip and on the ★ badges: "Best", "Funniest", "Recommended", ...
- *   episodes  the episode numbers, in the order you want them listed (when nobody is searching, the Best chip
- *             shows them in this order; with a search they follow the search).
+ *   label     the word shown on the filter chip and on the star badges ("Recommended", "Best", "Funniest", ...)
+ *   episodes  the episode numbers. They are always shown in episode order, so the order here does not matter.
  *
- * While the list is empty there is no Best chip and no badge. A number that is not an episode of the guide, or
- * that is listed twice, fails the tests (npm test), so a typo is caught before the site is published. */
+ * While the list is empty there is no chip and no badge. A number that is not an episode of the guide, or that
+ * is listed twice, fails the tests (npm test), so a typo is caught before the site is published. */
 window.GG_BEST = {
-  label: "Best",
-  episodes: [414, 881, 387, 554, 225, 373, 30, 50]
+  label: "Recommended",
+  episodes: [30, 50, 225, 373, 387, 414, 554, 881]
 };

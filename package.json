@@ -1,6 +1,6 @@
 {
   "name": "jethaverse",
-  "version": "3.10.0",
+  "version": "3.10.1",
   "private": true,
   "description": "Unofficial fan guide to Taarak Mehta Ka Ooltah Chashmah episodes: search all 4,872 episodes by name or story, with Gokuldham Society as the character picker.",
   "scripts": {

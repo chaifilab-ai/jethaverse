@@ -105,11 +105,11 @@ Two scripts keep the list fresh. They only write `data/live.json` (the changes) 
 `data/best.js` is the one file to edit by hand:
 
 ```js
-window.GG_BEST = { label: "Best", episodes: [881, 2298, 3904] };
+window.GG_BEST = { label: "Recommended", episodes: [30, 50, 225, 373, 387, 414, 554, 881] };
 ```
 
-- `label` is the word on the chip and the badges ("Best", "Funniest", "Recommended"; at most 20 characters).
-- `episodes` are episode numbers, in the order they should appear when nothing is searched. They can include episodes added by the daily job (numbers in `data/live.json`).
+- `label` is the word on the chip and the badges ("Recommended", "Best", "Funniest"; at most 20 characters).
+- `episodes` are episode numbers; the order does not matter, they are always shown in episode order (best match first when searching). They can include episodes added by the daily job (numbers in `data/live.json`).
 - After editing: `npm test` (a wrong or repeated number fails), then commit and push. The site updates by itself; phones pick it up the visit after next. The one-file `dist/JethaVerse.html` carries the list as of the day it was built (`python tools/build_single.py`).
 - Empty list = no Best chip and no badges.
 

@@ -332,6 +332,8 @@
       '<button data-tab="about">' + icon("mail") + "<span>Get in touch</span></button></nav>";
 
     var q = $("#q"), clearBtn = $(".clear"), tagsEl = $(".tags"), res = $(".results"), doors = $$(".doors i"), seg = $(".seg");
+    if (window.ResizeObserver) new ResizeObserver(function () { placePill(); }).observe(seg);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { placePill(); });
     q.value = state.q;
     function setNight() {
       app.classList.toggle("night", state.night); document.body.classList.toggle("night", state.night);
@@ -359,10 +361,7 @@
       var r = S.search(I, isMine() ? "" : state.q, { watched: f === "watched" || f === "unwatched" ? f : "all", watchedSet: watched });
       var items = r.items;
       if (f === "saved") items = items.filter(function (i) { return saved.has(i.ep.n); });
-      if (f === "best") {
-        items = items.filter(function (i) { return isBest(i.ep.n); });
-        if (!state.q.trim()) items.sort(function (a, b) { return BEST_AT[a.ep.n] - BEST_AT[b.ep.n]; });
-      }
+      if (f === "best") items = items.filter(function (i) { return isBest(i.ep.n); });  // same order as every other list: episode order, or best match first when searching
       cur = { r: r, items: items };
     }
     function charWords(name) {
@@ -450,6 +449,11 @@
         return '<button class="tag" data-off="' + esc(c) + '" aria-label="Remove ' + esc(labelFor(c)) + '">' + esc(labelFor(c)) + icon("x") + "</button>";
       }).join("");
     }
+    function placePill() {
+      var on = $('button[aria-pressed="true"]', seg), pill = $(".pillbg", seg);
+      if (!on || !pill || !on.offsetWidth) return;
+      pill.style.width = on.offsetWidth + "px"; pill.style.transform = "translateX(" + (on.offsetLeft - 3) + "px)";
+    }
     function syncHeader() {
       var n = cur.items.length, mine = isMine(), f = curFilter(), partial = !mine && cur.r.mode === "partial";
       roll($("[data-count]"), n);
@@ -466,6 +470,7 @@
         if (b.dataset.f === "saved") b.textContent = mine ? "Saved (" + fmt(saved.size) + ")" : "Saved";
         if (b.dataset.f === "watched") b.textContent = mine ? "Watched (" + fmt(watched.size) + ")" : "Watched";
       });
+      placePill();
       clearBtn.hidden = !state.q;
       // the home button says what you will get
       var picked = !!state.q.trim();
