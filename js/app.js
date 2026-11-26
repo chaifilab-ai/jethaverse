@@ -369,13 +369,14 @@
       var f = curFilter();
       var reset = (f === "watched" || f === "saved") && cur.items.length
         ? '<button class="linkbtn" data-act="reset">' + (state.armed ? "Tap again to clear " + cur.items.length : "Clear " + f + " list") + "</button> " : "";
-      var lv = D0.live, when = lv && (lv.checked || lv.updated.slice(0, 10));
-      var fresh = when ? " New uploads and dead links were last checked on " + dayText(when) + "." : "";
-      return '<div class="foot">' + reset +
+      // the sign-off belongs to browsing the episodes, not to your own Saved and Watched lists
+      var own = f === "watched" || f === "saved";
+      var sign = own ? "" :
         '<p class="love">Born out of love for Jethalal <span class="heart" aria-hidden="true">\u2665</span></p>' +
         '<p class="touch">Get in touch: <a href="mailto:chaifilab@gmail.com">chaifilab@gmail.com</a></p>' +
         (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
-        '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. An unofficial fan guide. Episode text is from SonyLIV; videos and their pictures are from the YouTube channels shown. Not affiliated with the show or its makers.' + fresh + "</p></div>";
+        '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>';
+      return reset || sign ? '<div class="foot">' + reset + sign + "</div>" : "";
     }
     function renderResults(animate) {
       var r = cur.r, items = cur.items;
@@ -532,7 +533,7 @@
     function sheetHTML(e) {
       var rich = !!e.summary, w = watched.has(e.n), sv = saved.has(e.n), p = posOf.get(e.n);
       var prev = p > 0 ? nums[p - 1] : null, next = p < nums.length - 1 ? nums[p + 1] : null;
-      var h = '<div class="grab"></div><button class="x" data-sheet="close" aria-label="Close">' + icon("x") + "</button>";
+      var h = '<div class="sheet-bar"><div class="grab"></div><button class="x" data-sheet="close" aria-label="Close">' + icon("x") + "</button></div>";
       if (e.watch && e.watch.length) h += thumbHTML(e, "hero");
       h += '<div class="sheet-top"><div><span class="epline">Episode ' + e.n + (e.aired ? " \u00b7 " + dayText(e.aired) : "") + "</span><h2 id=\"sheet-title\">" + esc(nice(e.title)) + "</h2></div>" + sticker(sheetPose(e), 76, "stk") + "</div>";
       // the main action first: it is what people came for
@@ -545,7 +546,7 @@
           '<p class="watchmeta">No free upload found for this episode yet.</p>';
       }
       h += '<div class="row2"><button class="btn ghost' + (w ? " on" : "") + '" data-sheet="w" aria-pressed="' + w + '">' + icon("check") + (w ? " Watched" : " Mark watched") + "</button>" +
-        '<button class="btn ghost' + (sv ? " on" : "") + '" data-sheet="s" aria-pressed="' + sv + '">' + icon("star") + (sv ? " Saved" : " Save") + "</button></div>";
+        '<button class="btn ghost' + (sv ? " on" : "") + '" data-sheet="s" aria-pressed="' + sv + '">' + icon(sv ? "starf" : "star") + (sv ? " Saved" : " Save") + "</button></div>";
       h += rateHTML(e);
       h += '<p class="syn">' + esc(rich ? e.summary : e.synopsis) + "</p>";
       if (rich && e.events.length) h += "<h3>Key moments</h3><ul class=\"moments\">" + e.events.map(function (m) { return "<li>" + esc(m) + "</li>"; }).join("") + "</ul>";
@@ -568,6 +569,7 @@
       sheet = document.createElement("section"); sheet.className = "sheet"; sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-labelledby", "sheet-title"); sheet.hidden = true;
       document.body.appendChild(scrim); document.body.appendChild(sheet);
       scrim.addEventListener("click", function () { closeSheet(); });
+      sheet.addEventListener("scroll", function () { sheet.classList.toggle("scrolled", sheet.scrollTop > 2); }, { passive: true });
       sheet.addEventListener("click", function (ev) {
         var who = ev.target.closest("[data-who]");
         if (who) {  // a name in "Who's in it": show that character's episodes

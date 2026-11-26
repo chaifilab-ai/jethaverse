@@ -2,6 +2,20 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.7.1] — 2026-11-26
+
+Finishing touches, from looking at the app on a phone.
+
+### Fixed
+
+- **The episode sheet's top bar stays in view.** The handle and the close button used to scroll away with the content, and the close button sat on top of the video picture. Now a bar with both stays at the top of the sheet (a soft shadow shows when the content slides under it), and the close button is never on the picture.
+
+### Changed
+
+- **A saved episode shows a filled star** on the Saved button.
+- **Closing text:** the long "unofficial fan guide / where the text comes from / last checked" paragraph is gone. The end of the Episodes list now reads "Born out of love for Jethalal ♥", "Get in touch: chaifilab@gmail.com", and "Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers."
+- **My list (and the Watched / Saved filters) no longer carry that sign-off**, only their own "Clear list" button.
+
 ## [3.7.0] — 2026-11-26
 
 Installable app, with the JethaVerse logo (the pink shirt in the navy stitched circle).
