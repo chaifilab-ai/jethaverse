@@ -1,0 +1,101 @@
+# JethaVerse: keep the episode list current and publish the site.
+#
+# Every 3 hours:  look for new uploads on the three YouTube channels (tools/sync_new.py) and, once a day, check a
+#                 seventh of the guide's links (tools/check_links.py). What they find goes into data/live.json, which is
+#                 saved back to this repository and published with the site.
+# On every push:  run the tests and publish the site (GitHub Pages, "Source: GitHub Actions").
+# By hand:        Actions tab -> "Update and publish" -> Run workflow.
+#
+# No secrets and no API key: the scripts read public feeds and pages only.
+# If a run fails (YouTube unreachable, or a test caught a bad change), GitHub emails the repository owner and the
+# site keeps showing its last good list.
+name: Update and publish
+
+on:
+  schedule:
+    - cron: "23 */3 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: jethaverse
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      publish: ${{ steps.save.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Look for new uploads and check links
+        id: scripts
+        if: github.event_name != 'push'
+        run: |
+          set +e
+          python tools/sync_new.py;   a=$?
+          python tools/check_links.py; b=$?
+          echo "failed=$(( a + b ))" >> "$GITHUB_OUTPUT"
+
+      - name: Tests (a bad change is never saved or published)
+        run: |
+          node --test tests/search.test.js tests/live.test.js
+          python -m unittest tests.test_cast tests.test_live
+
+      - name: Save what changed
+        id: save
+        run: |
+          if [ -n "$(git status --porcelain data/live.json data/live_state.json)" ]; then
+            git config user.name "jethaverse-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/live.json data/live_state.json
+            git commit -m "Update: new uploads and link check"
+            git push
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build the site
+        if: steps.save.outputs.publish == 'true'
+        run: |
+          pip install --quiet pillow
+          python tools/build_site.py
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.save.outputs.publish == 'true'
+        with:
+          path: dist/site
+
+      - name: Report a script that could not run
+        if: steps.scripts.outputs.failed != '' && steps.scripts.outputs.failed != '0'
+        run: |
+          echo "sync_new.py or check_links.py did not finish cleanly; see the step above."
+          exit 1
+
+  publish:
+    needs: update
+    if: always() && needs.update.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
