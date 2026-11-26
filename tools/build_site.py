@@ -24,6 +24,7 @@ for folder in ("css", "js"):
     shutil.copytree(os.path.join(ROOT, folder), os.path.join(OUT, folder))
 os.makedirs(os.path.join(OUT, "data"))
 shutil.copyfile(os.path.join(ROOT, "data", "episodes.js"), os.path.join(OUT, "data", "episodes.js"))
+shutil.copyfile(os.path.join(ROOT, "data", "best.js"), os.path.join(OUT, "data", "best.js"))  # the hand-picked "Best" list
 if os.path.exists(os.path.join(ROOT, "data", "live.json")):  # new episodes and replaced links (tools/sync_new.py, check_links.py)
     shutil.copyfile(os.path.join(ROOT, "data", "live.json"), os.path.join(OUT, "data", "live.json"))
 for name in sorted(os.listdir(os.path.join(ROOT, "assets", "stickers"))):

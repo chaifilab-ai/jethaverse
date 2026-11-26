@@ -22,7 +22,13 @@
   var SONYLIV = "https://www.sonyliv.com/shows/taarak-mehta-ka-ooltah-chashmah-1700000084/episodes/";
   var THUMB = "https://i.ytimg.com/vi/";
   var PAGE = 40;
-  var VIEWS = ["home", "list", "mine", "about"], FILTERS = ["all", "unwatched", "watched", "saved"];
+  var VIEWS = ["home", "list", "mine", "about"], FILTERS = ["all", "best", "unwatched", "watched", "saved"];
+  // The "Best" list (data/best.js): episodes picked by hand, shown as a filter chip and a star badge. Empty list = none of it shows.
+  var BEST = window.GG_BEST || {}, BEST_LABEL = String(BEST.label || "Best"), BEST_AT = {};
+  (BEST.episodes || []).forEach(function (n, i) { n = +n; if (n > 0 && BEST_AT[n] === undefined) BEST_AT[n] = i; });
+  var BEST_ON = Object.keys(BEST_AT).length > 0;
+  if (!BEST_ON) FILTERS = FILTERS.filter(function (f) { return f !== "best"; });
+  function isBest(n) { return BEST_AT[n] !== undefined; }
   // where an episode's cast list came from (Episodes 1-50 were checked by hand and carry no note)
   var CAST_NOTE = {
     t: "From the description only, so others may be in it.",
@@ -299,7 +305,7 @@
       '<button class="iconbtn" data-act="surprise" aria-label="Surprise me: pick a random episode">' + icon("dice") + "</button>" +
       '<button class="iconbtn" data-act="night" aria-pressed="false" aria-label="Switch to night">' + icon("moon") + "</button></div></header>" +
       '<form class="search" role="search" onsubmit="return false">' + icon("search") +
-      '<input id="q" type="search" placeholder="Search: Jethalal, Goli, London, Chai…" autocomplete="off" enterkeyhint="search" aria-label="Search all ' + fmt(D0.episodes.length) + ' episodes by who is in them or what happens">' +
+      '<input id="q" type="search" placeholder="Search: Jethalal, London, Chai, 881…" autocomplete="off" enterkeyhint="search" aria-label="Search all ' + fmt(D0.episodes.length) + ' episodes by who is in them or what happens">' +
       '<button type="button" class="clear" data-act="clear" aria-label="Clear search" hidden>' + icon("x") + "</button></form>" +
       '<div class="tags" aria-label="Characters in this search" hidden></div>' +
       '<div class="scene"><div class="scene-in"><div class="building"><div class="grid3">' +
@@ -316,7 +322,7 @@
       '<div class="phead"><span class="tx"><b data-count>0</b> <span data-pl>episodes</span><small data-ps></small></span>' +
       '<button class="iconbtn dice2" data-act="surprise" aria-label="Surprise me: pick a random episode from these">' + icon("dice") + "</button></div>" +
       '<div class="filters"><div class="seg" role="group" aria-label="Show"><span class="pillbg"></span>' +
-      [["all", "All"], ["unwatched", "To watch"], ["watched", "Watched"], ["saved", "Saved"]].map(function (f) { return '<button data-f="' + f[0] + '" aria-pressed="false">' + f[1] + "</button>"; }).join("") +
+      [["all", "All"], ["best", BEST_LABEL], ["unwatched", "To watch"], ["watched", "Watched"], ["saved", "Saved"]].filter(function (f) { return FILTERS.indexOf(f[0]) >= 0; }).map(function (f) { return '<button data-f="' + f[0] + '" aria-pressed="false">' + f[1] + "</button>"; }).join("") +
       '</div></div><div class="plist"><div class="results" aria-live="polite"></div><div class="doors"><i></i><i></i></div></div></section>' +
       aboutHTML() +
       '<nav class="tabs" aria-label="Sections">' +
@@ -353,6 +359,10 @@
       var r = S.search(I, isMine() ? "" : state.q, { watched: f === "watched" || f === "unwatched" ? f : "all", watchedSet: watched });
       var items = r.items;
       if (f === "saved") items = items.filter(function (i) { return saved.has(i.ep.n); });
+      if (f === "best") {
+        items = items.filter(function (i) { return isBest(i.ep.n); });
+        if (!state.q.trim()) items.sort(function (a, b) { return BEST_AT[a.ep.n] - BEST_AT[b.ep.n]; });
+      }
       cur = { r: r, items: items };
     }
     function charWords(name) {
@@ -379,6 +389,7 @@
       var flags = (done ? "<i title=\"Watched\">" + icon("check") + "</i>" : "") + (saved.has(e.n) ? "<i class=\"s\" title=\"Saved\">" + icon("star") + "</i>" : "");
       var where = e.videoId ? (e.channel || "") + (e.hl ? " \u00b7 highlights only" : "") : "SonyLIV Premium only";
       if (cur.r.mode === "partial" && item.lacks && item.lacks.length) where += " \u00b7 no " + item.lacks.map(labelFor).join(", ");
+      if (isBest(e.n) && curFilter() !== "best") where += " \u00b7 \u2605 " + BEST_LABEL;
       var rt = R.on && R.summary(e.n);
       if (rt) where += " \u00b7 \u2605 " + rt.avg.toFixed(1);
       return '<div class="ecard' + (done ? " done" : "") + '" role="button" tabindex="0" data-n="' + e.n + '" style="--i:' + Math.min(i, 12) + '">' + thumbHTML(e, "thumb") +
@@ -400,6 +411,7 @@
       var f = curFilter(), searching = !isMine() && !!state.q.trim(), m;
       if (f === "saved") m = searching ? ["thinking", "None of your saved episodes match this search."] : ["shy", "Nothing saved yet. Open an episode and tap Save."];
       else if (f === "watched") m = searching ? ["thinking", "None of the episodes you watched match this search."] : ["thinking", "You haven't marked anything watched yet."];
+      else if (f === "best") m = searching ? ["thinking", "None of the " + BEST_LABEL + " episodes match this search."] : ["thinking", "No " + BEST_LABEL + " episodes yet."];
       else if (f === "unwatched") m = ["celebrate", "You've watched everything here."];
       else m = ["crying", "No episode has all of these. Take one word out."];
       return '<div class="empty">' + sticker(m[0], 100) + "<p>" + m[1] + "</p>" + (searching ? '<button class="btn ghost" data-act="clear">Clear search</button>' : "") + "</div>";
@@ -444,11 +456,11 @@
       $("[data-pl]").textContent = partial ? (n === 1 ? "closest episode" : "closest episodes") : (n === 1 ? "episode" : "episodes");
       var w = mine ? [] : whatWords(cur.r.parsed), bits = [];
       if (partial) bits.push("none has all " + cur.r.asked); else if (w.length) bits.push("with " + w.join(" + "));
-      if (f === "unwatched") bits.push("not watched yet"); else if (f === "watched") bits.push("watched"); else if (f === "saved") bits.push("saved");
+      if (f === "unwatched") bits.push("not watched yet"); else if (f === "watched") bits.push("watched"); else if (f === "saved") bits.push("saved"); else if (f === "best") bits.push(BEST_LABEL.toLowerCase());
       $("[data-ps]").textContent = bits.length ? " · " + bits.join(" · ") : "";
       // the filter pill: four choices on the list, two in My list
       var order = mine ? ["saved", "watched"] : FILTERS;
-      seg.style.setProperty("--n", order.length); seg.style.setProperty("--k", Math.max(0, order.indexOf(f)));
+      seg.style.setProperty("--n", order.length); seg.style.setProperty("--k", Math.max(0, order.indexOf(f))); seg.classList.toggle("five", order.length > 4);
       $$("button", seg).forEach(function (b) {
         b.setAttribute("aria-pressed", b.dataset.f === f);
         if (b.dataset.f === "saved") b.textContent = mine ? "Saved (" + fmt(saved.size) + ")" : "Saved";
@@ -570,7 +582,7 @@
       var prev = p > 0 ? nums[p - 1] : null, next = p < nums.length - 1 ? nums[p + 1] : null;
       var h = '<div class="sheet-bar"><div class="grab"></div><button class="x" data-sheet="close" aria-label="Close">' + icon("x") + "</button></div>";
       if (e.watch && e.watch.length) h += thumbHTML(e, "hero");
-      h += '<div class="sheet-top"><div><span class="epline">Episode ' + e.n + (e.aired ? " \u00b7 " + dayText(e.aired) : "") + "</span><h2 id=\"sheet-title\">" + esc(nice(e.title)) + "</h2></div>" + sticker(sheetPose(e), 76, "stk") + "</div>";
+      h += '<div class="sheet-top"><div><span class="epline">Episode ' + e.n + (e.aired ? " \u00b7 " + dayText(e.aired) : "") + "</span>" + (isBest(e.n) ? ' <span class="bestpill">\u2605 ' + esc(BEST_LABEL) + "</span>" : "") + "<h2 id=\"sheet-title\">" + esc(nice(e.title)) + "</h2></div>" + sticker(sheetPose(e), 76, "stk") + "</div>";
       // the main action first: it is what people came for
       if (e.watch && e.watch.length) {
         var m0 = e.watch[0];

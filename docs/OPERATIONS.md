@@ -100,6 +100,19 @@ Two scripts keep the list fresh. They only write `data/live.json` (the changes) 
 - **Folding the changes in:** the file can grow for years (about 150 bytes per link). When the catalogue is rebuilt from the pipeline, the same links come in through the normal route and `data/live.json` can be emptied.
 - **Safety rules in the scripts:** a new episode number must be at most 40 past the newest known one and come from the official channel or Sony SAB; a video counts as full-length only at 15 minutes or more (17 to 23 is normal) and at most 40; one run in which more than 5% of links answer "gone" is treated as a broken run and changes nothing; a network error never counts against a link.
 
+## The Best list
+
+`data/best.js` is the one file to edit by hand:
+
+```js
+window.GG_BEST = { label: "Best", episodes: [881, 2298, 3904] };
+```
+
+- `label` is the word on the chip and the badges ("Best", "Funniest", "Recommended"; at most 20 characters).
+- `episodes` are episode numbers, in the order they should appear when nothing is searched. They can include episodes added by the daily job (numbers in `data/live.json`).
+- After editing: `npm test` (a wrong or repeated number fails), then commit and push. The site updates by itself; phones pick it up the visit after next. The one-file `dist/JethaVerse.html` carries the list as of the day it was built (`python tools/build_single.py`).
+- Empty list = no Best chip and no badges.
+
 ## Installing as an app
 
 The website is a "progressive web app": `manifest.webmanifest` (name, colours, icons) and `sw.js` (offline copy) are written by `tools/build_site.py`, so every deploy has them. Nothing to do by hand.

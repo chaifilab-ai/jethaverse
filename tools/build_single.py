@@ -52,6 +52,7 @@ for name, js in (("search", read("js/search.js")), ("ratings", read("js/ratings.
     assert "</script" not in js.lower(), name
 
 body = body.replace('<script src="data/episodes.js"></script>', "")
+body = body.replace('<script src="data/best.js"></script>', "<script>\n" + read("data/best.js") + "\n</script>")
 body = body.replace('<script src="js/search.js"></script>', "<script>\n" + read("js/search.js") + "\n</script>")
 body = body.replace('<script src="js/ratings.js"></script>', "<script>\n" + read("js/ratings.js") + "\n</script>")
 body = body.replace(

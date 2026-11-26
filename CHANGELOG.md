@@ -2,6 +2,17 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.10.0] — 2026-11-26
+
+### Added
+
+- **A "Best" list**, ready for your picks. The episode numbers go in one small file, `data/best.js` (together with the word to show: "Best", "Funniest", "Recommended"...). Once it has episodes, the Episodes filter row gets a **Best** chip (between All and To watch), the cards of those episodes say "★ Best", and the episode sheet shows a ★ Best tag beside the episode number. The Best chip works together with the search: "chai" + Best shows only the best chai episodes. With nothing searched, Best lists the episodes in the order you gave them. While the list is empty none of this shows.
+- `tests/best.test.js`: a number that is not an episode of the guide, or is listed twice, fails the tests, so a typo cannot reach the published site.
+
+### Changed
+
+- The search hint now reads "Search: Jethalal, London, Chai, 881…" (an episode number works in the search box).
+
 ## [3.9.0] — 2026-11-26
 
 Get in touch: better spacing, and gentle motion.
