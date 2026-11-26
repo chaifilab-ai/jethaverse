@@ -414,8 +414,36 @@
     "label": "Official channel",
     "minutes": 19
    }
+  ],
+  "606": [
+   {
+    "added": "2026-11-26",
+    "id": "D5zTAaM_l4s",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 20
+   }
+  ],
+  "607": [
+   {
+    "added": "2026-11-26",
+    "id": "8K45vDMrxhE",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 19
+   }
+  ],
+  "608": [
+   {
+    "added": "2026-11-26",
+    "check": 1,
+    "id": "Dp421FRh7Lc",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 21
+   }
   ]
  },
- "updated": "2026-11-26T16:28Z",
+ "updated": "2026-11-26T22:19Z",
  "v": 1
 }
