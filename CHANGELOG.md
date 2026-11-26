@@ -2,6 +2,20 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.9.0] — 2026-11-26
+
+Get in touch: better spacing, and gentle motion.
+
+### Changed
+
+- **No more big empty band.** On a tall phone the space between the card and the row of characters went from about 200 px to about 90 px: Jethalal is bigger (up to half the screen's height), the card has more room, and the row of characters is taller (about 100 px). Shorter phones get the same treatment at their own size.
+
+### Added
+
+- **Subtle motion on the Get in touch page:** Jethalal drops in and then floats slowly; the card rises in; the characters pop up one after another and then each sways a little out of step with the others; the heart beats now and then; a soft light sweeps across the email button every few seconds; slow clouds drift and small hearts float up from the characters through the sky.
+- **Tap a character:** they hop and a small heart floats up.
+- All of it stops when the phone's "reduce motion" setting is on, and runs only while the page is open (nothing animates in the background).
+
 ## [3.8.1] — 2026-11-26
 
 ### Changed

@@ -57,8 +57,12 @@
   function aboutHTML() {
     // everyone but Jethalal (he is the big picture above), in the order of the windows; the pictures are all the same height
     var crew = ["daya_heart", "tapu_wave", "bapuji_arms", "babita_heart", "iyer_plead", "bhide_arms", "sodhi_laugh", "popat_welcome", "goli_ok", "sundar_heart", "nattu_namaste"]
-      .map(function (p) { return sticker(p, 90).replace("<img", '<img loading="lazy"'); }).join("");
-    return '<section class="about" aria-label="Get in touch">' +
+      .map(function (p, i) { return '<span class="cm" style="--i:' + i + '">' + sticker(p, 90).replace("<img", '<img loading="lazy"') + "</span>"; }).join("");
+    // a few clouds drifting and hearts floating up through the sky between the card and the characters
+    var hearts = [["8%", "7.5s", "0s", "15px"], ["27%", "9s", "2.6s", "19px"], ["52%", "8s", "5.1s", "14px"], ["71%", "10s", "1.4s", "18px"], ["90%", "8.5s", "6.3s", "15px"]]
+      .map(function (h) { return '<i class="fl" style="--x:' + h[0] + ";--t:" + h[1] + ";--d:" + h[2] + ";--s:" + h[3] + '">' + "\u2665" + "</i>"; }).join("");
+    var sky = '<div class="about-sky" aria-hidden="true"><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i>' + hearts + "</div>";
+    return '<section class="about" aria-label="Get in touch">' + sky +
       '<button class="linkbtn about-back" data-act="back">' + icon("prev") + " Back to episodes</button>" +
       '<div class="about-hero">' + sticker("hero", 260) + "</div>" +
       '<div class="about-card">' +
@@ -69,6 +73,16 @@
       (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
       "</div>" +
       '<div class="about-crew">' + crew + "</div></section>";
+  }
+
+  // a tapped character hops and a little heart floats up from it
+  function hop(cm) {
+    if (!motionOK()) return;
+    var img = cm.firstElementChild;
+    if (img && img.animate) img.animate([{ transform: "none" }, { transform: "translateY(-22px) scale(.94, 1.08)", offset: .4 }, { transform: "translateY(0) scale(1.06, .92)", offset: .72 }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34, 1.3, .64, 1)" });
+    var h = document.createElement("i"); h.className = "tap-heart"; h.setAttribute("aria-hidden", "true"); h.textContent = "\u2665"; cm.appendChild(h);
+    var anim = h.animate && h.animate([{ transform: "translate(-50%, 0) scale(.5)", opacity: 0 }, { transform: "translate(-50%, -26px) scale(1)", opacity: 1, offset: .25 }, { transform: "translate(-50%, -74px) scale(1.15)", opacity: 0 }], { duration: 1100, easing: "ease-out" });
+    if (anim) anim.onfinish = function () { h.remove(); }; else h.remove();
   }
 
   /* ---------- small helpers ---------- */
@@ -508,6 +522,7 @@
     }
     function applyView(changed) {
       app.dataset.view = state.view; syncTabs();
+      if (state.view === "about") $$(".about img[loading=lazy]").forEach(function (i) { i.loading = "eager"; });  // the pictures wait until this page is opened, then load at once
       if (changed) { window.scrollTo(0, 0); if (state.view === "home") shuffleAll(); }
     }
     function go(view) {
@@ -687,6 +702,7 @@
     app.addEventListener("click", function (ev) {
       var t = ev.target;
       var tab = t.closest("[data-tab]"); if (tab) return go(tab.dataset.tab);
+      var cm = t.closest(".cm"); if (cm) return hop(cm);
       var f = t.closest(".flat"); if (f) { flip(f.dataset.k); reroll(f); return; }
       var off = t.closest("[data-off]"); if (off) return flip(off.dataset.off);
       var sg = t.closest("[data-f]");
