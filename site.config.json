@@ -1,0 +1,4 @@
+{
+  "liveUrl": "",
+  "_note": "liveUrl = the hosted guide's address of data/live.json, e.g. https://NAME.github.io/jethaverse/data/live.json. tools/build_single.py packs it into dist/JethaVerse.html so the one-file version can ask for new episodes and replaced links."
+}

@@ -1,0 +1,130 @@
+/* JethaVerse (formerly Jethiya, Gokuldham Guide) — design tokens. Every colour, size and timing in app.css comes from here.
+ * Theme: "the road to Gokuldham". Indian highway furniture: sand verges, asphalt,
+ * yellow road paint, green highway signs and the white-and-yellow milestone stone. */
+:root {
+  /* Road palette */
+  --c-sand: #F4E7CC;          /* page */
+  --c-sand-2: #EBD9B4;        /* verges, quiet fills */
+  --c-paper: #FFFBF1;         /* cards, sheets */
+  --c-asphalt: #22201E;       /* ink + road */
+  --c-asphalt-2: #3A3633;     /* road texture, dim lanes */
+  --c-asphalt-3: #57514C;
+  --c-yellow: #FFC928;        /* road paint, main CTA */
+  --c-yellow-deep: #E8AE00;
+  --c-yellow-soft: #FFEDB0;
+  --c-green: #1D6B45;         /* highway signs */
+  --c-green-deep: #124A2F;
+  --c-green-soft: #DDEFE3;
+  --c-white: #FFFFFF;
+  --c-sky-top: #A8D8F0;          /* day sky: the page behind everything */
+  --c-sky-low: #E3F3FB;
+  --c-sun: #FFB637;
+  /* Hero scene */
+  --c-cloud: #FFFDF5;
+  --c-hill: #EDC98B;
+  --c-bldg: #DDA765;
+  --c-window: #FFF1CF;
+  --c-treeline: #86A05A;
+  --c-tree: #4C7838;
+  --c-tree-hi: #6A9A4C;
+  --c-ground: #EAD3A2;
+  --c-field: #E0C48F;
+
+  /* Text */
+  --c-ink: var(--c-asphalt);
+  --c-ink-2: #5A4F45;
+  --c-ink-3: #675B50;         /* hints; 5.4:1 on sand, 6.4:1 on paper */
+  --c-line: #E2CFA8;
+  --c-line-strong: #CDB487;
+
+  /* Semantic */
+  --c-success: var(--c-green);
+  --c-warning: #8A5A00;
+  --c-warning-soft: #FFF0CC;
+  --c-error: #B3261E;
+  --c-mark: #FFE27A;          /* search highlight */
+  --c-focus: #1A73E8;
+  --c-pill: var(--c-asphalt); /* the chosen filter: a dark pill, so yellow stays for "tap here" and "picked" */
+  --c-pill-ink: #FFFBF1;
+  --c-scrim: rgba(24, 22, 20, .56);
+
+  /* Type: Baloo 2 (round, friendly, has Devanagari and Gujarati cousins) for headings, Hind for reading */
+  --font: "Hind", "Segoe UI", system-ui, -apple-system, "Noto Sans Devanagari", sans-serif;
+  --font-display: "Baloo 2", "Hind", "Segoe UI", system-ui, "Noto Sans Devanagari", sans-serif;
+  --t-xs: .75rem;     /* 12 */
+  --t-sm: .875rem;    /* 14 */
+  --t-md: 1rem;       /* 16 */
+  --t-lg: 1.1875rem;  /* 19 */
+  --t-xl: 1.5rem;     /* 24 */
+  --t-2xl: 2rem;      /* 32 */
+  --t-3xl: clamp(2.25rem, 1.6rem + 3vw, 3.5rem);
+  --t-hero: clamp(2.9rem, 1.6rem + 6.4vw, 6rem);
+  --lh-tight: .98;
+  --lh-snug: 1.25;
+  --lh-body: 1.55;
+  --w-reg: 400;
+  --w-med: 500;
+  --w-semi: 600;
+  --w-bold: 700;
+
+  /* Space (4px grid) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 48px;
+  --s-9: 64px;
+  --s-10: 96px;
+
+  /* Shape */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+  --bw: 2px;
+
+  /* Elevation: hard "painted sign" shadows */
+  --sh-pop: 0 4px 0 var(--c-asphalt);
+  --sh-pop-lg: 0 6px 0 var(--c-asphalt);
+  --sh-soft: 0 18px 40px -22px rgba(34, 32, 30, .55);
+  --sh-sheet: 0 -12px 48px -12px rgba(24, 22, 20, .5);
+
+  /* Sizing */
+  --tap: 44px;
+  --wrap: 1240px;
+  --topbar-h: 60px;
+  --sidebar-w: 292px;
+  --sheet-w: 560px;
+  --dock-h: 80px;
+  --rail-w: 14px;
+  --rail-gap: 30px;           /* room the rail takes on the left of the results */
+
+  /* Motion */
+  --dur-fast: 150ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+
+  /* Layers */
+  --z-topbar: 20;
+  --z-dock: 30;
+  --z-scrim: 40;
+  --z-filters: 45;
+  --z-sheet: 50;
+  --z-surprise: 60;
+  --z-toast: 70;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur: 1ms;
+    --dur-slow: 1ms;
+  }
+}

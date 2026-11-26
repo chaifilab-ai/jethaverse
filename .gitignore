@@ -1,0 +1,13 @@
+# What goes to GitHub is the app, its data, the automation and the tests.
+# Kept on the computer only: how the catalogue was researched, the artwork sources, and build output.
+pipeline/
+research/
+archive/
+design/
+dist/
+*.xlsx
+assets/*_sheet_source.png
+.claude/
+node_modules/
+__pycache__/
+*.tmp
