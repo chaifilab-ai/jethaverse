@@ -22,7 +22,7 @@
   var SONYLIV = "https://www.sonyliv.com/shows/taarak-mehta-ka-ooltah-chashmah-1700000084/episodes/";
   var THUMB = "https://i.ytimg.com/vi/";
   var PAGE = 40;
-  var VIEWS = ["home", "list", "mine"], FILTERS = ["all", "unwatched", "watched", "saved"];
+  var VIEWS = ["home", "list", "mine", "about"], FILTERS = ["all", "unwatched", "watched", "saved"];
   // where an episode's cast list came from (Episodes 1-50 were checked by hand and carry no note)
   var CAST_NOTE = {
     t: "From the description only, so others may be in it.",
@@ -36,7 +36,10 @@
   var installEvent = null;
   var installable = /^https?:$/.test(location.protocol) && !CFG.noHash;  // not the one-file copy, not a hosted frame
   function standalone() { return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
-  function syncInstall() { var b = document.querySelector('[data-act="install"]'); if (b) b.hidden = !(installEvent && !standalone()); }
+  function syncInstall() {
+    var show = !!(installEvent && !standalone());
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="install"]'), function (b) { b.hidden = !show; });
+  }
   if (installable) {
     window.addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); installEvent = e; syncInstall(); });
     window.addEventListener("appinstalled", function () { installEvent = null; syncInstall(); });
@@ -48,6 +51,24 @@
   }
   // iPhone and iPad have no install prompt: Safari's Share menu has "Add to Home Screen"
   function iosHint() { return installable && /iPhone|iPad|iPod/.test(navigator.userAgent || "") && !standalone() ? "To install this on an iPhone: tap Share, then Add to Home Screen." : ""; }
+
+  /* ---------- the Get in touch page ---------- */
+  var MAIL = "chaifilab@gmail.com";
+  function aboutHTML() {
+    var crew = ["tapu_wave", "daya_heart", "babita_heart", "bapuji_laugh", "goli_cheer"].map(function (p) { return sticker(p, 90); }).join("");
+    return '<section class="about" aria-label="Get in touch">' +
+      '<button class="linkbtn about-back" data-act="back">' + icon("prev") + " Back to episodes</button>" +
+      '<div class="about-hero">' + sticker("hero", 260) + "</div>" +
+      '<div class="about-card">' +
+      '<p class="love">Born out of love for Jethalal <span class="heart" aria-hidden="true">\u2665</span></p>' +
+      '<p class="touch">Get in touch:</p>' +
+      '<a class="btn go about-mail" href="mailto:' + MAIL + '">' + icon("mail") + " " + MAIL + "</a>" +
+      '<button class="btn ghost about-install" data-act="install" hidden>' + icon("install") + " Install JethaVerse as an app</button>" +
+      (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
+      '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>' +
+      "</div>" +
+      '<div class="about-crew">' + crew + "</div></section>";
+  }
 
   /* ---------- small helpers ---------- */
   function $(sel, el) { return (el || app).querySelector(sel); }
@@ -258,7 +279,8 @@
     app.innerHTML =
       '<div class="sky"></div><div class="stars">' + stars + '</div><img class="buddy" src="assets/stickers/welcome.webp" alt="" width="280" height="280">' +
       '<header class="appbar"><div class="brand">JethaVerse<small>Find any Taarak Mehta episode</small></div>' +
-      '<div class="bar-actions"><button class="iconbtn" data-act="install" aria-label="Install JethaVerse as an app" title="Install as an app" hidden>' + icon("install") + "</button>" +
+      '<div class="bar-actions"><button class="iconbtn about-btn" data-act="about" aria-label="Get in touch" title="Get in touch">' + icon("mail") + "</button>" +
+      '<button class="iconbtn" data-act="install" aria-label="Install JethaVerse as an app" title="Install as an app" hidden>' + icon("install") + "</button>" +
       '<button class="iconbtn" data-act="surprise" aria-label="Surprise me: pick a random episode">' + icon("dice") + "</button>" +
       '<button class="iconbtn" data-act="night" aria-pressed="false" aria-label="Switch to night">' + icon("moon") + "</button></div></header>" +
       '<form class="search" role="search" onsubmit="return false">' + icon("search") +
@@ -281,10 +303,12 @@
       '<div class="filters"><div class="seg" role="group" aria-label="Show"><span class="pillbg"></span>' +
       [["all", "All"], ["unwatched", "To watch"], ["watched", "Watched"], ["saved", "Saved"]].map(function (f) { return '<button data-f="' + f[0] + '" aria-pressed="false">' + f[1] + "</button>"; }).join("") +
       '</div></div><div class="plist"><div class="results" aria-live="polite"></div><div class="doors"><i></i><i></i></div></div></section>' +
+      aboutHTML() +
       '<nav class="tabs" aria-label="Sections">' +
       '<button data-tab="home">' + icon("people") + "<span>Characters</span></button>" +
       '<button data-tab="list">' + icon("list") + "<span>Episodes</span></button>" +
-      '<button data-tab="mine">' + icon("star") + '<span>My list</span><b data-minecount hidden></b></button></nav>';
+      '<button data-tab="mine">' + icon("star") + '<span>My list</span><b data-minecount hidden></b></button>' +
+      '<button data-tab="about">' + icon("mail") + "<span>Get in touch</span></button></nav>";
 
     var q = $("#q"), clearBtn = $(".clear"), tagsEl = $(".tags"), res = $(".results"), doors = $$(".doors i"), seg = $(".seg");
     q.value = state.q;
@@ -369,14 +393,7 @@
       var f = curFilter();
       var reset = (f === "watched" || f === "saved") && cur.items.length
         ? '<button class="linkbtn" data-act="reset">' + (state.armed ? "Tap again to clear " + cur.items.length : "Clear " + f + " list") + "</button> " : "";
-      // the sign-off belongs to browsing the episodes, not to your own Saved and Watched lists
-      var own = f === "watched" || f === "saved";
-      var sign = own ? "" :
-        '<p class="love">Born out of love for Jethalal <span class="heart" aria-hidden="true">\u2665</span></p>' +
-        '<p class="touch">Get in touch: <a href="mailto:chaifilab@gmail.com">chaifilab@gmail.com</a></p>' +
-        (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
-        '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>';
-      return reset || sign ? '<div class="foot">' + reset + sign + "</div>" : "";
+      return reset ? '<div class="foot">' + reset + "</div>" : "";
     }
     function renderResults(animate) {
       var r = cur.r, items = cur.items;
@@ -446,7 +463,7 @@
 
     /* ---------- query edits (typing, windows, chips) ---------- */
     var typeTimer;
-    function setQuery(v, opts) { state.q = v; q.value = v; state.limit = PAGE; state.armed = false; render(opts || { doors: true, top: true }); writeNav(false); }
+    function setQuery(v, opts) { if (state.view === "about") { state.view = "home"; applyView(false); } state.q = v; q.value = v; state.limit = PAGE; state.armed = false; render(opts || { doors: true, top: true }); writeNav(false); }
     function isChar(token, name) { return S.parseQuery(I, token).characters.indexOf(name) >= 0; }
     function flip(name) {
       var tokens = state.q.split(/\s+/).filter(Boolean);
@@ -684,6 +701,8 @@
         case "more": state.limit += PAGE; var y = getY(); renderResults(false); setY(y); savePlace(); break;
         case "surprise": surprise(); break;
         case "install": installApp(); break;
+        case "about": go("about"); break;
+        case "back": go("home"); break;
         case "night": state.night = !state.night; save(KEY.night, state.night); setNight(); break;
         case "reset":
           if (!state.armed) { state.armed = true; a.textContent = "Tap again to clear " + cur.items.length; setTimeout(function () { state.armed = false; var b2 = $('[data-act="reset"]'); if (b2) b2.textContent = "Clear " + curFilter() + " list"; }, 4000); break; }

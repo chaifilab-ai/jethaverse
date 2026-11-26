@@ -2,6 +2,19 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.8.0] — 2026-11-26
+
+A "Get in touch" tab.
+
+### Added
+
+- **A fourth tab, "Get in touch"** (an envelope icon, after My list). It is its own screen: the big Jethalal picture, a card that says "Born out of love for Jethalal ♥" and "Get in touch:" with a tap-to-email button for chaifilab@gmail.com, the small print ("Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers."), and a row of characters standing on the green floor. It fits one screen without scrolling on phones from 700 px tall up. When the app can be installed, an "Install JethaVerse as an app" button shows here too; on an iPhone it says how (Share, then Add to Home Screen).
+- On wide screens a small envelope button in the top bar opens the same page in place of the episode list (with "Back to episodes"; searching or picking a character also brings the list back).
+
+### Changed
+
+- The Episodes list and My list end cleanly again: no sign-off under the list. My list and the Watched / Saved filters keep only their "Clear list" button.
+
 ## [3.7.1] — 2026-11-26
 
 Finishing touches, from looking at the app on a phone.
