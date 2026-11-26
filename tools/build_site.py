@@ -65,7 +65,7 @@ if SITE_URL:  # what WhatsApp and others show when the link is shared
 assert '  <link rel="stylesheet" href="css/tokens.css">' in html
 html = html.replace('  <link rel="stylesheet" href="css/tokens.css">', extra + '  <link rel="stylesheet" href="css/tokens.css">', 1)
 register = ('  <script>\n  if ("serviceWorker" in navigator) addEventListener("load", function () {\n'
-            '    navigator.serviceWorker.register("sw.js").then(function (r) { r.update(); }).catch(function () {});\n  });\n  </script>\n')
+            '    navigator.serviceWorker.register("sw.js").then(function (r) { return r.active ? r.update() : null; }).catch(function () {});\n  });\n  </script>\n')
 assert html.count("</body>") == 1
 html = html.replace("</body>", register + "</body>", 1)
 with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as f:
