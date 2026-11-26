@@ -8,5 +8,5 @@
  * that is listed twice, fails the tests (npm test), so a typo is caught before the site is published. */
 window.GG_BEST = {
   label: "Best",
-  episodes: []
+  episodes: [414, 881, 387, 554, 225, 373, 30, 50]
 };
