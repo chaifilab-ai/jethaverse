@@ -8,7 +8,7 @@ The guide is live and updating itself.
 
 ### Added
 
-- **Published.** The project is at github.com/chaifilab-ai/jethaverse and the site at https://chaifilab-ai.github.io/jethaverse/. The scheduled job ran there for the first time today: it reads the three channels every 3 hours, checks links once a day, and republishes.
+- **Published.** The project is at github.com/chaifilab-ai/jethaverse and the site at https://jethaverse.com (domain bought at Hostinger and pointed at GitHub Pages). The scheduled job ran there for the first time today: it reads the three channels every 3 hours, checks links once a day, and republishes.
 - **The one-file version now updates itself.** `site.config.json` points it at `data/live.json` in the GitHub project, so a phone that has `JethaVerse.html` picks up new episodes and replaced links whenever it is opened online.
 - `tools/probe.py`: a self-test that says whether the machine it runs on can read YouTube's feed, playlist pages, video pages and link check. The job runs it on manual runs.
 
