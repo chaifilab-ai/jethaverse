@@ -85,6 +85,13 @@ def log(state, text):
     print(" *", text)
 
 
+for _stream in (sys.stdout, sys.stderr):  # a console that cannot show Hindi prints "?" instead of stopping the run
+    try:
+        _stream.reconfigure(errors="replace")
+    except Exception:
+        pass
+
+
 def watch_url(vid):
     return "https://www.youtube.com/watch?v=" + vid
 
@@ -143,6 +150,7 @@ def feed(channel_id):
 
 
 BADGE = re.compile(r'thumbnailBadgeViewModel":\{"text":"((?:\d{1,2}:)?\d{1,2}:\d\d)"')
+OLD_ROW = re.compile(r'"playlistVideoRenderer":\{"videoId":"([\w-]{11})".{0,6000}?"lengthSeconds":"(\d+)"', re.S)
 THUMB = re.compile(r'i\.ytimg\.com/vi/([\w-]{11})/')
 
 
@@ -157,6 +165,8 @@ def parse_lengths(page):
         for part in m.group(1).split(":"):
             sec = sec * 60 + int(part)
         out.setdefault(ids[-1], sec)
+    for m in OLD_ROW.finditer(page):  # the older layout YouTube still serves to some visitors
+        out.setdefault(m.group(1), int(m.group(2)))
     return out
 
 

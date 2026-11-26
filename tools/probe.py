@@ -24,6 +24,13 @@ def main():
     print("playlist pages:   %d lengths read, covering %d of the feed's %d uploads" % (len(secs), known, len(items)))
     if not known:
         bad = 1
+    for ch in C.CHANNELS:  # what each playlist page looks like from here
+        for prefix in ("UULF", "UU"):
+            status, body = C.http_get("https://www.youtube.com/playlist?list=" + prefix + ch["id"][2:])
+            page = body.decode("utf-8", "replace")
+            print("  %-16s %-4s answer %s, %7d bytes, %3d lengths, new rows %d, old rows %d, consent %s"
+                  % (ch["label"], prefix, status, len(page), len(C.parse_lengths(page)), page.count("lockupViewModel"),
+                     page.count("playlistVideoRenderer"), "consent.youtube" in page or "consent.google" in page))
     got = C.video_info(vid)
     if got["seconds"] and got["desc"]:
         print("video page:       length %d s and description read (%s)" % (got["seconds"], vid))

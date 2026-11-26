@@ -68,6 +68,9 @@ class Titles(unittest.TestCase):
         page = row % ("AAAAAAAAAAA", "19:42") + row % ("BBBBBBBBBBB", "1:02:03") + row % ("CCCCCCCCCCC", "0:41")
         self.assertEqual(C.parse_lengths(page), {"AAAAAAAAAAA": 1182, "BBBBBBBBBBB": 3723, "CCCCCCCCCCC": 41})
         self.assertEqual(C.parse_lengths("nothing here"), {})
+        old = '{"playlistVideoRenderer":{"videoId":"DDDDDDDDDDD","thumbnail":{},"title":{"runs":[{"text":"x"}]},"lengthSeconds":"1260","isPlayable":true}}'
+        self.assertEqual(C.parse_lengths(old + old.replace("DDDDDDDDDDD", "EEEEEEEEEEE").replace("1260", "600")),
+                         {"DDDDDDDDDDD": 1260, "EEEEEEEEEEE": 600})
 
     def test_descriptions(self):
         official = ("Click here to Subscribe to Taarak Mehta Ka Ooltah Chashmah Official Channel: https://www.youtube.com/x\n\n"
