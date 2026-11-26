@@ -2,6 +2,18 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.5.2] — 2026-11-26
+
+### Changed
+
+- The search box's hint now reads "Search: Jethalal, Goli, London, Chai…".
+- The end of the list is rewritten: "Born out of love for Jethalal" with a heart, a "Get in touch" email link, then the small print (made for fans and not for money, unofficial, where the text and videos come from, when links were last checked).
+
+### Fixed
+
+- **A whole-word match now always ranks above a longer word that merely starts the same way.** Searching "chai" used to list "fake gold chain" episodes ahead of tea ones, and "tea" could surface "teacher". The word itself (or its synonym) now comes first.
+- "chai" and "tea" find each other's episodes.
+
 ## [3.5.1] — 2026-11-26
 
 The guide is live and updating itself.

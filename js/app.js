@@ -239,7 +239,7 @@
       '<div class="bar-actions"><button class="iconbtn" data-act="surprise" aria-label="Surprise me: pick a random episode">' + icon("dice") + "</button>" +
       '<button class="iconbtn" data-act="night" aria-pressed="false" aria-label="Switch to night">' + icon("moon") + "</button></div></header>" +
       '<form class="search" role="search" onsubmit="return false">' + icon("search") +
-      '<input id="q" type="search" placeholder="Search: Jethalal Goli, Navratri…" autocomplete="off" enterkeyhint="search" aria-label="Search all ' + fmt(D0.episodes.length) + ' episodes by who is in them or what happens">' +
+      '<input id="q" type="search" placeholder="Search: Jethalal, Goli, London, Chai…" autocomplete="off" enterkeyhint="search" aria-label="Search all ' + fmt(D0.episodes.length) + ' episodes by who is in them or what happens">' +
       '<button type="button" class="clear" data-act="clear" aria-label="Clear search" hidden>' + icon("x") + "</button></form>" +
       '<div class="tags" aria-label="Characters in this search" hidden></div>' +
       '<div class="scene"><div class="scene-in"><div class="building"><div class="grid3">' +
@@ -346,7 +346,10 @@
         ? '<button class="linkbtn" data-act="reset">' + (state.armed ? "Tap again to clear " + cur.items.length : "Clear " + f + " list") + "</button> " : "";
       var lv = D0.live, when = lv && (lv.checked || lv.updated.slice(0, 10));
       var fresh = when ? " New uploads and dead links were last checked on " + dayText(when) + "." : "";
-      return '<p class="foot">' + reset + '<b class="love">Born out of love for Jethalal!</b>' + "An unofficial fan guide. Episode text is from SonyLIV; videos and their pictures are from the YouTube channels shown. Not affiliated with the show or its makers." + fresh + "</p>";
+      return '<div class="foot">' + reset +
+        '<p class="love">Born out of love for Jethalal <span class="heart" aria-hidden="true">\u2665</span></p>' +
+        '<p class="touch">Get in touch: <a href="mailto:chaifilab@gmail.com">chaifilab@gmail.com</a></p>' +
+        '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. An unofficial fan guide. Episode text is from SonyLIV; videos and their pictures are from the YouTube channels shown. Not affiliated with the show or its makers.' + fresh + "</p></div>";
     }
     function renderResults(animate) {
       var r = cur.r, items = cur.items;

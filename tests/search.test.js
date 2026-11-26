@@ -242,3 +242,15 @@ test("closest matches: when nothing has every picked character, only the episode
   assert.equal(exact.mode, "all");
   exact.items.forEach((it) => assert.equal(it.lacks.length, 0));
 });
+
+test("the search box's own examples work: Jethalal, Goli, London, Chai", () => {
+  const all = S.createIndex(D);
+  const text = (ep) => (ep.title + " " + ep.synopsis + " " + ep.summary + " " + ep.events.join(" ")).toLowerCase();
+  const chai = S.search(all, "chai");
+  assert.ok(chai.items.length >= 30, "chai also finds the episodes that say tea");
+  chai.items.slice(0, 20).forEach((i) => assert.match(text(i.ep), /\b(chai|tea)\b/, `ep ${i.ep.n} is about tea, not a chain`));
+  const london = S.search(all, "london");
+  assert.ok(london.items.length >= 10);
+  london.items.slice(0, 4).forEach((i) => assert.match(text(i.ep), /\blondon/));
+  ["Jethalal", "Goli"].forEach((c) => assert.deepEqual(S.search(all, c).parsed.characters, [c]));
+});

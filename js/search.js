@@ -40,6 +40,7 @@
     mobile: ["phone", "cellphone", "cell"], phone: ["mobile", "cellphone"],
     rain: ["barish", "baarish", "monsoon", "flood", "rains", "waterlogging"],
     bomb: ["explosive", "bombs"],
+    chai: ["tea"], tea: ["chai"],
     poem: ["poetry", "kavi", "sammelan", "poet", "kavita"], kavi: ["poem", "poetry", "sammelan", "poet"],
     cricket: ["bat", "batting", "bowling"],
     matki: ["dahi", "handi", "janmashtami", "govinda"],
@@ -212,9 +213,11 @@
     return true;
   }
 
+  var WHOLE_WORD = 10; // more than any field weight can add up to
+
   // Score one topic group against a doc: best field weight x match quality, plus the doc words it hit.
   function scoreTopic(doc, topic) {
-    var best = 0, total = 0, hits = [];
+    var best = 0, total = 0, hits = [], whole = false;
     FIELDS.forEach(function (fw) {
       var fieldWords = doc.fieldWords[fw[0]], fieldBest = 0;
       topic.terms.forEach(function (phrase, ti) {
@@ -233,6 +236,7 @@
         if (q) {
           // the user's own word beats a synonym slightly
           var score = fw[1] * q * (ti === 0 ? 1 : 0.9);
+          if (q === 1) whole = true;
           if (score > fieldBest) fieldBest = score;
           phraseHits.forEach(function (h) { if (hits.indexOf(h) < 0) hits.push(h); });
         }
@@ -241,7 +245,9 @@
       total += fieldBest;
     });
     // best field counts fully; every other field that also mentions it adds a little
-    return { score: best ? best + 0.3 * (total - best) : 0, hits: hits };
+    // "whole": the word itself (or a synonym) is there, not just a longer word that starts with it or a near spelling.
+    // Those always rank first, so "chai" lists tea before chains and "tea" lists tea before teachers.
+    return { score: best ? best + 0.3 * (total - best) + (whole ? WHOLE_WORD : 0) : 0, hits: hits };
   }
 
   /**

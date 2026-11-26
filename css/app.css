@@ -172,8 +172,13 @@ body.night {
 .flags i.s { background: var(--c-yellow); color: var(--c-asphalt); }
 .flags .i { width: 13px; height: 13px; }
 .more { width: 100%; min-height: 48px; border-radius: var(--r-sm); border: var(--bw) dashed var(--c-line-strong); background: none; font-weight: var(--w-semi); margin-bottom: 8px; }
-.foot { margin: 14px 4px 0; font-size: var(--t-xs); color: var(--c-ink-3); line-height: 1.5; }
-.love { display: block; margin-bottom: 4px; font-family: var(--font-display); font-weight: 700; font-size: var(--t-md); color: var(--c-ink); }
+.foot { margin: 22px 4px 0; font-size: var(--t-xs); color: var(--c-ink-3); line-height: 1.5; text-align: center; }
+.foot p { margin: 0; }
+.love { font-family: var(--font-display); font-weight: 700; font-size: var(--t-md); color: var(--c-ink); }
+.heart { color: var(--c-error); }
+.touch { font-size: var(--t-sm); color: var(--c-ink-2); }
+.touch a { display: inline-block; padding: 12px 2px; font-weight: var(--w-semi); color: var(--c-ink); }
+.fine { max-width: 560px; margin: 0 auto; }
 .linkbtn { border: 0; background: none; padding: 0 4px; min-height: var(--tap); font-weight: var(--w-semi); text-decoration: underline; color: var(--c-ink-2); }
 
 .skeleton { display: grid; gap: 8px; }
