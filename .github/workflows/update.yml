@@ -51,6 +51,11 @@ jobs:
           python tools/check_links.py; b=$?
           echo "failed=$(( a + b ))" >> "$GITHUB_OUTPUT"
 
+      - name: Can this machine read YouTube? (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        run: python tools/probe.py
+
       - name: Tests (a bad change is never saved or published)
         run: |
           node --test tests/search.test.js tests/live.test.js
