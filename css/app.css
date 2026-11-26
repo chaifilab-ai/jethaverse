@@ -233,6 +233,17 @@ body.night {
 .caution { margin: 10px 0 0; padding: 10px 12px; background: var(--c-warning-soft); border-radius: var(--r-sm); color: var(--c-warning); font-size: var(--t-sm); line-height: 1.4; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 .row2 .btn { padding: 0 8px; white-space: nowrap; }
+/* star rating in the episode sheet */
+.rate { margin-top: 10px; padding: 6px 6px 8px 12px; border: 1px solid var(--c-line); border-radius: var(--r-md); background: var(--c-paper); }
+.rate-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0 8px; }
+.rate-l { font-size: var(--t-sm); font-weight: var(--w-semi); }
+.rate-stars { display: flex; }
+.rate-stars button { width: var(--tap); height: var(--tap); display: grid; place-items: center; padding: 0; border: 0; border-radius: var(--r-sm); background: none; color: var(--c-ink-3); transition: transform .16s var(--ease-spring); }
+.rate-stars button .i { width: 30px; height: 30px; }
+.rate-stars button.on { color: var(--c-ink); }
+.rate-stars button:active { transform: scale(.88); }
+.rate-stars button:disabled { opacity: .65; }
+.rate-all { margin: 0; font-size: var(--t-xs); color: var(--c-ink-3); }
 .pn { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .pn button { min-height: var(--tap); border-radius: var(--r-sm); border: 1px solid var(--c-line-strong); background: var(--c-sand); font-weight: var(--w-semi); display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
 .pn button:disabled { opacity: .4; }

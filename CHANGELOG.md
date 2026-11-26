@@ -2,6 +2,18 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.6.0] — 2026-11-26
+
+Shared star ratings. Built and tested; they stay hidden until the guide is given a database (see `docs/OPERATIONS.md`, "Shared ratings").
+
+### Added
+
+- **Rate an episode, 1 to 5 stars**, in the episode sheet under Watched / Save. The sheet shows your rating and everyone's average ("★ 4.3 from 27 ratings"); cards in the list show the average.
+- No account: the first time someone rates, their browser is given an anonymous id that stays on the device. One id, one rating per episode; rating again replaces it.
+- Everyone's totals are one small download, kept on the device and asked for again at most every 10 minutes.
+- A rating shows at once and is taken back, with a message, if it could not be saved.
+- `js/ratings.js` (the whole feature's logic, no Firebase library), `database.rules.json` (what the database allows), `tools/ratings_selftest.py` (tries 20 ways of cheating against the real database), 11 tests in `tests/ratings.test.js`.
+
 ## [3.5.2] — 2026-11-26
 
 ### Changed

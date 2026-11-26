@@ -43,7 +43,9 @@ head += f"\n<style>\n{css}\n</style>\n"
 # body: no data script (the app fetches data/episodes.json); inline our own scripts
 body = body.replace('<script src="data/episodes.js"></script>', "")
 body = body.replace('<script src="js/search.js"></script>', script("js/search.js"))
-body = body.replace('<script src="js/app.js" defer></script>', script("js/app.js", "window.GG_CONFIG = { noHash: true };\n"))
+body = body.replace('<script src="js/ratings.js"></script>', script("js/ratings.js"))
+# ratings: null = off. A hosted page like this one cannot reach the ratings database.
+body = body.replace('<script src="js/app.js" defer></script>', script("js/app.js", "window.GG_CONFIG = { noHash: true, ratings: null };\n"))
 assert 'src="js/' not in body and 'src="data/' not in body
 
 os.makedirs(os.path.join(OUT, "assets"), exist_ok=True)

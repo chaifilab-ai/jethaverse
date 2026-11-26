@@ -100,6 +100,24 @@ Two scripts keep the list fresh. They only write `data/live.json` (the changes) 
 - **Folding the changes in:** the file can grow for years (about 150 bytes per link). When the catalogue is rebuilt from the pipeline, the same links come in through the normal route and `data/live.json` can be emptied.
 - **Safety rules in the scripts:** a new episode number must be at most 40 past the newest known one and come from the official channel or Sony SAB; a video counts as full-length only at 15 minutes or more (17 to 23 is normal) and at most 40; one run in which more than 5% of links answer "gone" is treated as a broken run and changes nothing; a network error never counts against a link.
 
+## Shared ratings
+
+Visitors rate episodes 1 to 5 stars; everyone sees the average. The data lives in a Firebase Realtime Database that the app talks to with plain web requests (`js/ratings.js`; no Firebase library is loaded).
+
+| Path | Holds | Who may read | Who may write |
+|---|---|---|---|
+| `/agg/<episode>` | `{ "s": sum of stars, "c": number of ratings }` | anyone | a signed-in visitor, only together with their own vote |
+| `/votes/<episode>/<uid>` | `1` to `5` | that visitor | that visitor, only together with the matching change to the total |
+
+- **Switching it on:** in Firebase, create a project, add a Realtime Database, switch on Authentication -> Anonymous, and paste `database.rules.json` into the database's Rules tab. Put the project's web API key and database address into `SITE` at the top of `js/ratings.js`. Run `python tools/ratings_selftest.py` (it must end with ALL GOOD), then publish. Empty `SITE` = ratings off, nothing shown.
+- **The rules are the safety, not the app.** `database.rules.json` refuses any write in which a total and the visitor's own vote do not move together: a total cannot be raised without casting one's single vote, a vote cannot be worth more than its stars, nobody can vote as someone else, and nothing can be deleted. Re-run the self-test after every rules change. The API key in the page is public by design; it only names the project.
+- **Reads are budgeted.** The app downloads `/agg` once (about 25 bytes per rated episode, 120 KB if every episode were rated), keeps it in `localStorage` (`gokuldham.ratings.v1`) and asks again at most every 10 minutes. It never downloads votes to count them. Saving one rating costs two small reads and one write.
+- **On the device:** `gokuldham.myratings.v1` (this visitor's stars) and `gokuldham.rater.v1` (their anonymous id and pass). Clearing browser data makes them a new visitor; their old votes stay counted.
+- **Free-plan limits (Spark):** 1 GB stored, 10 GB downloaded a month, 100 simultaneous connections. Web requests like the app's do not hold a connection open.
+- **Known weakness:** an anonymous id costs nothing, so someone determined can clear their browser and vote again. Firebase limits how many ids one network address can create per hour; beyond that, App Check or sign-in would be the next step. Treat the averages as a fan poll.
+- **Undoing abuse by hand:** Firebase console -> Realtime Database: edit `/agg/<episode>` or delete an episode's votes there (the owner's console is not bound by the rules).
+- **Backups:** Firebase console -> Realtime Database -> Export JSON, now and then. There is one environment only (no separate staging project); `tools/ratings_selftest.py` writes to the made-up episode 99999 so tests never touch real ratings.
+
 ## Known limits
 
 - **Links are checked by word overlap, not by watching.** 436 links carry a "may not match" note. Episodes 1-50 were checked against the video captions.

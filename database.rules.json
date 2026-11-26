@@ -1,0 +1,23 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "agg": {
+      ".read": true,
+      "$ep": {
+        ".write": "auth != null && $ep.matches(/^[1-9][0-9]{0,4}$/) && newData.hasChildren(['s', 'c']) && newData.child('s').isNumber() && newData.child('c').isNumber() && newData.parent().parent().child('votes').child($ep).child(auth.uid).isNumber() && newData.child('c').val() === (data.child('c').exists() ? data.child('c').val() : 0) + (root.child('votes').child($ep).child(auth.uid).exists() ? 0 : 1) && newData.child('s').val() === (data.child('s').exists() ? data.child('s').val() : 0) + newData.parent().parent().child('votes').child($ep).child(auth.uid).val() - (root.child('votes').child($ep).child(auth.uid).exists() ? root.child('votes').child($ep).child(auth.uid).val() : 0)",
+        "s": { ".validate": "newData.isNumber()" },
+        "c": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+    "votes": {
+      "$ep": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && $ep.matches(/^[1-9][0-9]{0,4}$/) && newData.isNumber() && newData.val() >= 1 && newData.val() <= 5 && newData.val() % 1 === 0 && newData.parent().parent().parent().child('agg').child($ep).child('c').val() === (root.child('agg').child($ep).child('c').exists() ? root.child('agg').child($ep).child('c').val() : 0) + (data.exists() ? 0 : 1) && newData.parent().parent().parent().child('agg').child($ep).child('s').val() === (root.child('agg').child($ep).child('s').exists() ? root.child('agg').child($ep).child('s').val() : 0) + newData.val() - (data.exists() ? data.val() : 0)"
+        }
+      }
+    }
+  }
+}

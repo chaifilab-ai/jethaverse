@@ -138,6 +138,9 @@
     var liveNow = bestLive();
     S.applyLive(D0, liveNow);
     var I, byN, nums, posOf, counts;
+    // everyone's star ratings (js/ratings.js). Off when the page has no database to ask: nothing about ratings shows.
+    var R = window.GGRatings ? window.GGRatings.create({ config: CFG.ratings, storage: { get: function (k) { return store(k, null); }, set: save } }) : { on: false };
+    var rating = null;  // { n, stars } while a rating is on its way to the database
     function load() {  // everything worked out from the episode list; run again when a newer live file arrives
       I = S.createIndex(D0);
       byN = new Map(D0.episodes.map(function (e) { return [e.n, e]; }));
@@ -317,6 +320,8 @@
       var flags = (done ? "<i title=\"Watched\">" + icon("check") + "</i>" : "") + (saved.has(e.n) ? "<i class=\"s\" title=\"Saved\">" + icon("star") + "</i>" : "");
       var where = e.videoId ? (e.channel || "") + (e.hl ? " \u00b7 highlights only" : "") : "SonyLIV Premium only";
       if (cur.r.mode === "partial" && item.lacks && item.lacks.length) where += " \u00b7 no " + item.lacks.map(labelFor).join(", ");
+      var rt = R.on && R.summary(e.n);
+      if (rt) where += " \u00b7 \u2605 " + rt.avg.toFixed(1);
       return '<div class="ecard' + (done ? " done" : "") + '" role="button" tabindex="0" data-n="' + e.n + '" style="--i:' + Math.min(i, 12) + '">' + thumbHTML(e, "thumb") +
         '<span class="cbody"><b class="ctitle">' + esc(nice(e.title)) + '</b><span class="csnip">' + esc(snip(e.synopsis, re)) + '</span><span class="cmeta">' + esc(where) + '</span></span><span class="flags">' + flags + "</span></div>";
     }
@@ -489,6 +494,20 @@
       var set = artFor(who);
       return set[e.n % set.length];
     }
+    function rateHTML(e) {
+      if (!R.on) return "";
+      var busy = !!rating && rating.n === e.n, my = busy ? rating.stars : R.mine(e.n), sum = R.summary(e.n), b = "";
+      for (var i = 1; i <= 5; i++) {
+        b += '<button data-rate="' + i + '"' + (i <= my ? ' class="on"' : "") + ' aria-pressed="' + (i === my) + '" aria-label="' + i + (i === 1 ? " star" : " stars") + '"' + (busy ? " disabled" : "") + ">" + icon(i <= my ? "starf" : "star") + "</button>";
+      }
+      var all = sum ? "\u2605 " + sum.avg.toFixed(1) + " from " + fmt(sum.count) + (sum.count === 1 ? " rating" : " ratings") : "No ratings yet. Be the first.";
+      return '<div class="rate"><div class="rate-row"><span class="rate-l" id="rate-l">' + (busy ? "Saving\u2026" : my ? "Your rating" : "Rate this episode") + '</span><span class="rate-stars" role="group" aria-labelledby="rate-l">' + b + '</span></div><p class="rate-all">' + all + "</p></div>";
+    }
+    function paintRate(e, focusStar) {  // redraw just the stars of the open sheet
+      var box = sheet && state.open === e.n && $(".rate", sheet); if (!box) return;
+      box.outerHTML = rateHTML(e);
+      var f = focusStar && $('[data-rate="' + focusStar + '"]', sheet); if (f) f.focus();
+    }
     function sheetHTML(e) {
       var rich = !!e.summary, w = watched.has(e.n), sv = saved.has(e.n), p = posOf.get(e.n);
       var prev = p > 0 ? nums[p - 1] : null, next = p < nums.length - 1 ? nums[p + 1] : null;
@@ -506,6 +525,7 @@
       }
       h += '<div class="row2"><button class="btn ghost' + (w ? " on" : "") + '" data-sheet="w" aria-pressed="' + w + '">' + icon("check") + (w ? " Watched" : " Mark watched") + "</button>" +
         '<button class="btn ghost' + (sv ? " on" : "") + '" data-sheet="s" aria-pressed="' + sv + '">' + icon("star") + (sv ? " Saved" : " Save") + "</button></div>";
+      h += rateHTML(e);
       h += '<p class="syn">' + esc(rich ? e.summary : e.synopsis) + "</p>";
       if (rich && e.events.length) h += "<h3>Key moments</h3><ul class=\"moments\">" + e.events.map(function (m) { return "<li>" + esc(m) + "</li>"; }).join("") + "</ul>";
       var who = e.cast.map(function (c) { return '<button data-who="' + esc(c) + '" aria-label="Show episodes with ' + esc(c) + '">' + esc(c) + "</button>"; }).join("") +
@@ -533,6 +553,16 @@
           state.q = (LABEL[who.dataset.who] || who.dataset.who).toLowerCase(); q.value = state.q; state.filter = "all"; state.limit = PAGE;
           var was = state.view; if (!wide.matches) state.view = "list";
           hideSheet(); applyView(was !== state.view); render({ animate: true, top: true }); writeNav(false);
+          return;
+        }
+        var star = ev.target.closest("[data-rate]");
+        if (star) {  // rate the open episode: show it at once, take it back if the database says no
+          var ep = byN.get(state.open), stars = +star.dataset.rate;
+          if (rating || !ep || R.mine(ep.n) === stars) return;
+          rating = { n: ep.n, stars: stars }; paintRate(ep);
+          R.rate(ep.n, stars).then(function () { rating = null; toast("Thanks! Your rating is saved."); },
+            function () { rating = null; toast("Couldn't save your rating. Check your connection and try again."); })
+            .then(function () { paintRate(ep, stars); var y = getY(); renderResults(false); setY(y); });
           return;
         }
         var b = ev.target.closest("[data-sheet]"); if (!b || b.disabled) return;
@@ -694,6 +724,12 @@
         render({ animate: false });
       }).catch(function () { /* offline, or opened as a file: the copy at hand stays */ });
     }
+    // everyone's ratings: the copy on the device shows at once; a newer one (asked for at most every 10 minutes) redraws
+    if (R.on) R.load().then(function (changed) {
+      if (!changed) return;
+      var y = getY(); renderResults(false); setY(y);
+      var open = state.open && byN.get(state.open); if (open && !rating) paintRate(open);
+    }).catch(function () { /* offline: the stars on the device stay */ });
     openDoors();
     writeNav(false);
     if (restoreY && state.view !== "home") requestAnimationFrame(function () { window.scrollTo(0, restoreY); });
