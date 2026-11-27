@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-26",
+ "checked": "2026-11-27",
  "dead": [],
  "episodes": {
   "4877": {
@@ -442,8 +442,27 @@
     "label": "Official channel",
     "minutes": 21
    }
+  ],
+  "609": [
+   {
+    "added": "2026-11-27",
+    "id": "q3FMpGt0pLw",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 20
+   }
+  ],
+  "610": [
+   {
+    "added": "2026-11-27",
+    "check": 1,
+    "id": "5Zds03mur2A",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 21
+   }
   ]
  },
- "updated": "2026-11-26T22:19Z",
+ "updated": "2026-11-27T01:48Z",
  "v": 1
 }
