@@ -18,7 +18,7 @@
   // browser's history entries instead (so Back still works) and in this tab's session (so a reload keeps your place).
   var useHash = !CFG.noHash && /^https?:$/.test(location.protocol);
   // the storage names keep the old "gokuldham" prefix on purpose: renaming them would empty everyone's Watched and Saved
-  var KEY = { watched: "gokuldham.watched.v1", saved: "gokuldham.saved.v1", night: "gokuldham.night.v1", place: "gokuldham.place.v1" };
+  var KEY = { watched: "gokuldham.watched.v1", saved: "gokuldham.saved.v1", night: "gokuldham.night.v1", place: "gokuldham.place.v1", hint: "gokuldham.hint.v1" };
   var SONYLIV = "https://www.sonyliv.com/shows/taarak-mehta-ka-ooltah-chashmah-1700000084/episodes/";
   var THUMB = "https://i.ytimg.com/vi/";
   var PAGE = 40;
@@ -169,10 +169,14 @@
     }
   }
   var toastTimer;
-  function toast(msg) {
+  function toast(msg, ms) {
     var old = document.querySelector(".toast"); if (old) old.remove();
-    var t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); t.textContent = msg;
-    document.body.appendChild(t); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.remove(); }, 2600);
+    var t = document.createElement("div"); var home = !wide.matches && document.querySelector('.app[data-view="home"]'), bar = home && document.querySelector(".search");
+    t.className = "toast" + (bar ? " top" : ""); t.setAttribute("role", "status");
+    // on the Characters page the message sits just under the search box, clear of the windows and the Show button
+    if (bar) t.style.top = Math.round(bar.getBoundingClientRect().bottom + 6) + "px";
+    t.textContent = msg;
+    document.body.appendChild(t); clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.remove(); }, ms || 2600);
   }
   // a video picture that does not load (offline, or a host that blocks outside images) just disappears; the number stays
   document.addEventListener("error", function (e) { var t = e.target; if (t && t.tagName === "IMG" && t.src.indexOf(THUMB) === 0) t.remove(); }, true);
@@ -438,10 +442,15 @@
       $$(".flat").forEach(function (f) {
         var k = f.dataset.k, on = !!lit[k];
         if ((f.getAttribute("aria-pressed") === "true") !== on) f.setAttribute("aria-pressed", on);
-        var badge = $(".cnt", f);
-        if (on) { f.removeAttribute("data-add"); badge.textContent = "✓"; }  // picked: a tick, not a number (the button below has the count)
-        else if (narrowing) { var n = 0; cur.items.forEach(function (it) { if (it.ep.cast.indexOf(k) >= 0) n++; }); f.setAttribute("data-add", n); badge.textContent = fmt(n); }
-        else { f.removeAttribute("data-add"); badge.textContent = fmt(counts[k] || 0); }
+        var badge = $(".cnt", f), name = $(".plate", f).textContent;
+        if (on) { f.removeAttribute("data-add"); f.removeAttribute("aria-disabled"); badge.textContent = "✓"; f.setAttribute("aria-label", name + ", picked. Tap to take out"); }  // picked: a tick, not a number (the button below has the count)
+        else if (narrowing) {
+          var n = 0; cur.items.forEach(function (it) { if (it.ep.cast.indexOf(k) >= 0) n++; });
+          f.setAttribute("data-add", n); badge.textContent = fmt(n);
+          if (n) { f.removeAttribute("aria-disabled"); f.setAttribute("aria-label", name + ", adding gives " + fmt(n) + (n === 1 ? " episode" : " episodes")); }
+          else { f.setAttribute("aria-disabled", "true"); f.setAttribute("aria-label", name + ", no episode together with your picks"); }
+        }
+        else { f.removeAttribute("data-add"); f.removeAttribute("aria-disabled"); badge.textContent = fmt(counts[k] || 0); f.setAttribute("aria-label", name + ", " + fmt(counts[k] || 0) + " episodes"); }
       });
       var chars = cur.r.parsed.characters;
       tagsEl.hidden = !chars.length;  // chips show on the list (phones); the lit windows show it on the home screen
@@ -499,6 +508,14 @@
     var typeTimer;
     function setQuery(v, opts) { if (state.view === "about") { state.view = "home"; applyView(false); } state.q = v; q.value = v; state.limit = PAGE; state.armed = false; render(opts || { doors: true, top: true }); writeNav(false); }
     function isChar(token, name) { return S.parseQuery(I, token).characters.indexOf(name) >= 0; }
+    // A window that would leave no episode at all: say why, give it a small shake, and change nothing.
+    function deadEnd(f) {
+      var words = whatWords(cur.r.parsed);
+      if (!words.length) return false;
+      toast("No episode has " + labelFor(f.dataset.k) + " with " + listJoin(words) + ". Tap a lit window to take one out.", 4200);
+      if (motionOK() && f.animate) f.animate([{ transform: "none" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(-4px)" }, { transform: "translateX(4px)" }, { transform: "none" }], { duration: 360, easing: "ease-out" });
+      return true;
+    }
     function flip(name) {
       var tokens = state.q.split(/\s+/).filter(Boolean);
       var has = cur.r.parsed.characters.indexOf(name) >= 0;
@@ -720,7 +737,15 @@
       var t = ev.target;
       var tab = t.closest("[data-tab]"); if (tab) return go(tab.dataset.tab);
       var cm = t.closest(".cm"); if (cm) return hop(cm);
-      var f = t.closest(".flat"); if (f) { flip(f.dataset.k); reroll(f); return; }
+      var f = t.closest(".flat");
+      if (f) {
+        if (f.getAttribute("data-add") === "0" && deadEnd(f)) return;
+        flip(f.dataset.k); reroll(f);
+        if (cur.r.parsed.characters.length && !store(KEY.hint, false)) {  // once: what the small numbers mean
+          save(KEY.hint, true); toast("Small numbers = episodes you would get by adding that person. Greyed = none.", 4800);
+        }
+        return;
+      }
       var off = t.closest("[data-off]"); if (off) return flip(off.dataset.off);
       var sg = t.closest("[data-f]");
       if (sg) {

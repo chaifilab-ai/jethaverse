@@ -109,6 +109,7 @@ body.night {
 .flat[data-add] .cnt { transform: scale(1); background: var(--c-paper); color: var(--c-ink); border-color: var(--c-line-strong); }
 .flat[data-add="0"] .win, .flat[data-add="0"] .plate { opacity: .45; filter: grayscale(.7); }
 .flat[data-add="0"] .cnt { opacity: .8; }
+.flat[aria-disabled="true"] { cursor: not-allowed; }
 .flat:active .win { transform: scale(.94); }
 .flat:focus-visible { outline-offset: 0; border-radius: var(--r-sm); }
 .plate { font-size: var(--t-sm); font-weight: var(--w-semi); background: var(--c-paper); color: var(--c-ink); border-radius: 5px; padding: 0 7px; line-height: 20px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -311,7 +312,8 @@ body.night {
 .surprise img { width: 140px; height: auto; animation: bob 1.2s ease-in-out infinite; }
 .surprise b { font-family: var(--font-display); font-weight: 800; font-size: 84px; line-height: 1.1; font-variant-numeric: tabular-nums; background: var(--c-green); padding: 0 24px; border-radius: 16px; outline: 4px solid #fff; outline-offset: -8px; }
 .surprise p { margin: 0; font-weight: var(--w-semi); }
-.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: var(--z-toast); background: var(--c-asphalt); color: #fff; padding: 10px 16px; border-radius: var(--r-pill); font-size: var(--t-sm); box-shadow: var(--sh-soft); max-width: calc(100vw - 32px); animation: pop .22s var(--ease-spring); }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: var(--z-toast); background: var(--c-asphalt); color: #fff; padding: 10px 16px; border-radius: 18px; font-size: var(--t-sm); line-height: 1.35; text-align: center; box-shadow: var(--sh-soft); width: max-content; max-width: min(calc(100vw - 32px), 340px); animation: toast-in .22s var(--ease-spring); }
+@keyframes toast-in { from { transform: translateX(-50%) scale(.85); opacity: 0; } }
 
 /* ---------- the bottom bar (phones): Characters, Episodes, My list ---------- */
 .tabs { display: none; }
@@ -329,6 +331,7 @@ body.night {
   .search input { height: 48px; }
   .sheet { max-height: 94%; }
   .toast { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .toast.top { bottom: auto; }
 
   .tabs {
     display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-dock); height: var(--bar, 58px); max-width: 520px; margin: 0 auto;

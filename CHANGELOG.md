@@ -2,6 +2,17 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.11.0] — 2026-11-27
+
+Picking characters, reworked after the user's two screenshots (Jethalal + Iyer + Sundar, then adding Goli).
+
+### Changed
+
+- **A window that would leave no episode can no longer be added.** Once you have picked someone, a window that would give nothing (the greyed "0" ones) shakes and a message under the search box says why ("No episode has Goli with Jethalal, Sundar and Iyer. Tap a lit window to take one out."). Nothing changes in your search, so you never land on an empty or "closest" screen by tapping. Typing several names that no episode has together still shows the closest matches, as before.
+- **The first time you pick someone, a short message explains the small numbers** ("Small numbers = episodes you would get by adding that person. Greyed = none."). It is shown once per phone.
+- **Each window describes itself** for screen readers and for tools that read the page: "Babita, adding gives 4 episodes", "Goli, no episode together with your picks", "Jethalal, picked. Tap to take out".
+- **Messages (toasts):** centred and rounded, wrap onto two or three lines instead of running off the screen, and on the Characters page appear just under the search box instead of over the windows and the Show button.
+
 ## [3.10.1] — 2026-11-26
 
 ### Changed
