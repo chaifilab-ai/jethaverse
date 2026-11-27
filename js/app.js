@@ -18,7 +18,7 @@
   // browser's history entries instead (so Back still works) and in this tab's session (so a reload keeps your place).
   var useHash = !CFG.noHash && /^https?:$/.test(location.protocol);
   // the storage names keep the old "gokuldham" prefix on purpose: renaming them would empty everyone's Watched and Saved
-  var KEY = { watched: "gokuldham.watched.v1", saved: "gokuldham.saved.v1", night: "gokuldham.night.v1", place: "gokuldham.place.v1", hint: "gokuldham.hint.v1" };
+  var KEY = { watched: "gokuldham.watched.v1", saved: "gokuldham.saved.v1", night: "gokuldham.night.v1", place: "gokuldham.place.v1", hint: "gokuldham.hint.v1", last: "gokuldham.last.v1" };
   var SONYLIV = "https://www.sonyliv.com/shows/taarak-mehta-ka-ooltah-chashmah-1700000084/episodes/";
   var THUMB = "https://i.ytimg.com/vi/";
   var PAGE = 40;
@@ -79,6 +79,18 @@
       (iosHint() ? '<p class="touch">' + iosHint() + "</p>" : "") +
       "</div>" +
       '<div class="about-crew">' + crew + "</div></section>";
+  }
+
+  var SHARE_BASE = "https://jethaverse.com/";  // shared links always point at the real site, wherever the app is running
+  function legacyCopy(text) {
+    try {
+      var t = document.createElement("textarea"); t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+      document.body.appendChild(t); t.select(); var ok = document.execCommand("copy"); t.remove(); return !!ok;
+    } catch (e) { return false; }
+  }
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(text); });
+    return Promise.resolve(legacyCopy(text));
   }
 
   // a tapped character hops and a little heart floats up from it
@@ -425,13 +437,14 @@
         ? '<button class="linkbtn" data-act="reset">' + (state.armed ? "Tap again to clear " + cur.items.length : "Clear " + f + " list") + "</button> " : "";
       var own = f === "watched" || f === "saved";
       var fine = own ? "" : '<p class="fine">Made for fans, not for money: no ads, no fees, no sign-up. All the shows, episodes and likenesses belong to their makers.</p>';
-      return reset || fine ? '<div class="foot">' + reset + fine + "</div>" : "";
+      var backup = isMine() ? '<div class="backup"><p><b>Your lists live on this phone only.</b> Back them up to keep them if you change phone or clear Chrome' + "'" + 's data.</p><div class="row2"><button class="btn ghost" data-act="backup">Copy backup</button><button class="btn ghost" data-act="restore">Restore</button></div></div>' : "";
+      return reset || fine || backup ? '<div class="foot">' + reset + backup + fine + "</div>" : "";
     }
     function renderResults(animate) {
       var r = cur.r, items = cur.items;
       if (!items.length) { res.innerHTML = emptyHTML() + footHTML(); return; }
       var shown = items.slice(0, state.limit);
-      res.innerHTML = noticeHTML(r) + shown.map(function (it, i) { return cardHTML(it, animate === false ? 0 : i); }).join("") +
+      res.innerHTML = continueHTML() + noticeHTML(r) + shown.map(function (it, i) { return cardHTML(it, animate === false ? 0 : i); }).join("") +
         (items.length > state.limit ? '<button class="more" data-act="more">Show ' + Math.min(PAGE, items.length - state.limit) + " more</button>" : "") + footHTML();
     }
     function syncWindows() {
@@ -570,6 +583,67 @@
       if (set.has(n)) set.delete(n); else set.add(n);
       save(key, Array.from(set));
     }
+    // Share: the phone's own share sheet (WhatsApp and the rest); where there is none, the text and link are copied
+    function shareEpisode(e) {
+      var url = SHARE_BASE + "#ep=" + e.n, text = "Episode " + e.n + ": " + nice(e.title) + " (Taarak Mehta Ka Ooltah Chashmah)";
+      if (navigator.share) { navigator.share({ title: "JethaVerse", text: text, url: url }).catch(function () { /* closing the share sheet is not a problem */ }); return; }
+      copyText(text + "\n" + url).then(function (ok) { toast(ok ? "Link copied. Paste it into a message." : "Could not copy the link."); });
+    }
+    // Where you left off: the first episode you have not watched after the last one you marked watched
+    function continueHTML() {
+      if (isMine() || curFilter() !== "all" || state.q.trim() || !watched.size) return "";
+      var last = store(KEY.last, null);
+      if (!(last > 0)) { last = 0; watched.forEach(function (n) { if (byN.has(n) && n > last) last = n; }); }  // before this was remembered: the furthest one
+      var n = window.GGLists.nextUnwatched(last, function (x) { return watched.has(x); }, nums), e = n && byN.get(n);
+      if (!e) return "";
+      return '<p class="resume-l">Continue where you left off <span>after Episode ' + last + "</span></p>" + cardHTML({ ep: e, hits: [], lacks: [] }, 0);
+    }
+    // a small dialog (own scrim, closes with Cancel, a tap outside, Escape or the Back button)
+    var dlg = null, dlgFrom = null;
+    function closeDialog() {
+      if (!dlg) return;
+      var d = dlg; dlg = null; d.remove();
+      document.removeEventListener("keydown", dlgKey, true); window.removeEventListener("popstate", closeDialog);
+      if (dlgFrom && dlgFrom.focus) dlgFrom.focus();
+    }
+    function dlgKey(ev) { if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); closeDialog(); } }
+    function openDialog(html, from) {
+      closeDialog();
+      dlg = document.createElement("div"); dlg.className = "dlg-scrim"; dlgFrom = from || null;
+      dlg.innerHTML = '<div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-t">' + html + "</div>";
+      document.body.appendChild(dlg);
+      dlg.addEventListener("click", function (ev) { if (ev.target === dlg || ev.target.closest("[data-dlg=close]")) closeDialog(); });
+      document.addEventListener("keydown", dlgKey, true); window.addEventListener("popstate", closeDialog);
+      return dlg;
+    }
+    function backupDialog(from) {
+      var code = window.GGLists.encode({ watched: watched, saved: saved, last: store(KEY.last, null) });
+      var d = openDialog('<h2 id="dlg-t">Your backup</h2><p>' + fmt(watched.size) + " watched, " + fmt(saved.size) + ' saved. Keep this code somewhere safe, such as a message to yourself. On a new phone: My list, Restore, paste it.</p>' +
+        '<textarea class="dlg-code" readonly rows="4" aria-label="Backup code">' + esc(code) + '</textarea><p class="dlg-note" data-dlg-note></p>' +
+        '<div class="row2"><button class="btn ghost" data-dlg="close">Close</button><button class="btn go" data-dlg="copy">Copy</button></div>', from);
+      var ta = $("textarea", d), note = $("[data-dlg-note]", d);
+      function copy() { copyText(code).then(function (ok) { note.textContent = ok ? "Copied. Now paste it somewhere safe." : "Could not copy by itself: touch and hold the code, then choose Copy."; }); }
+      $('[data-dlg="copy"]', d).addEventListener("click", function () { ta.select(); copy(); });
+      ta.select(); copy();  // copied the moment it opens
+    }
+    function restoreDialog(from) {
+      var d = openDialog('<h2 id="dlg-t">Restore your lists</h2><p>Paste the backup code. It is added to what this phone already has; nothing is taken away.</p>' +
+        '<textarea class="dlg-code" rows="4" placeholder="Paste your backup code here" aria-label="Backup code"></textarea><p class="dlg-note dlg-err" data-dlg-note></p>' +
+        '<div class="row2"><button class="btn ghost" data-dlg="close">Cancel</button><button class="btn go" data-dlg="restore">Restore</button></div>', from);
+      var ta = $("textarea", d), note = $("[data-dlg-note]", d);
+      ta.focus();
+      $('[data-dlg="restore"]', d).addEventListener("click", function () {
+        var got = window.GGLists.decode(ta.value);
+        if (!got) { note.textContent = "That does not look like a JethaVerse backup code. Copy the whole code and try again."; return; }
+        var w0 = watched.size, s0 = saved.size;
+        got.watched.forEach(function (n) { if (byN.has(n)) watched.add(n); });
+        got.saved.forEach(function (n) { if (byN.has(n)) saved.add(n); });
+        save(KEY.watched, Array.from(watched)); save(KEY.saved, Array.from(saved));
+        if (got.last && byN.has(got.last) && !(store(KEY.last, null) > 0)) save(KEY.last, got.last);
+        closeDialog(); refreshAfterMark();
+        toast("Restored: " + fmt(watched.size - w0) + " watched and " + fmt(saved.size - s0) + " saved added.", 3600);
+      });
+    }
     function refreshAfterMark() { var y = getY(); compute(); syncHeader(); renderResults(false); setY(y); }
 
     /* ---------- the episode sheet ---------- */
@@ -602,7 +676,7 @@
     function sheetHTML(e) {
       var rich = !!e.summary, w = watched.has(e.n), sv = saved.has(e.n), p = posOf.get(e.n);
       var prev = p > 0 ? nums[p - 1] : null, next = p < nums.length - 1 ? nums[p + 1] : null;
-      var h = '<div class="sheet-bar"><div class="grab"></div><button class="x" data-sheet="close" aria-label="Close">' + icon("x") + "</button></div>";
+      var h = '<div class="sheet-bar"><div class="grab"></div><button class="sharebtn" data-sheet="share" aria-label="Share this episode">' + icon("share") + '</button><button class="x" data-sheet="close" aria-label="Close">' + icon("x") + "</button></div>";
       if (e.watch && e.watch.length) h += thumbHTML(e, "hero");
       h += '<div class="sheet-top"><div><span class="epline">Episode ' + e.n + (e.aired ? " \u00b7 " + dayText(e.aired) : "") + "</span>" + (isBest(e.n) ? ' <span class="bestpill">\u2605 ' + esc(BEST_LABEL) + "</span>" : "") + "<h2 id=\"sheet-title\">" + esc(nice(e.title)) + "</h2></div>" + sticker(sheetPose(e), 76, "stk") + "</div>";
       // the main action first: it is what people came for
@@ -660,8 +734,10 @@
         var b = ev.target.closest("[data-sheet]"); if (!b || b.disabled) return;
         var a = b.dataset.sheet, e = byN.get(state.open);
         if (a === "close") return closeSheet();
+        if (a === "share") return shareEpisode(e);
         if (a === "prev" || a === "next") { var p = posOf.get(state.open) + (a === "next" ? 1 : -1); return showEpisode(nums[p]); }
         toggleSet(a === "w" ? watched : saved, a === "w" ? KEY.watched : KEY.saved, e.n);
+        if (a === "w") { if (watched.has(e.n)) save(KEY.last, e.n); else if (store(KEY.last, null) === e.n) save(KEY.last, null); }  // where you left off
         sheet.innerHTML = sheetHTML(e); burst($('[data-sheet="' + a + '"]', sheet)); refreshAfterMark();
       });
     }
@@ -762,13 +838,15 @@
         case "more": state.limit += PAGE; var y = getY(); renderResults(false); setY(y); savePlace(); break;
         case "surprise": surprise(); break;
         case "install": installApp(); break;
+        case "backup": backupDialog(a); break;
+        case "restore": restoreDialog(a); break;
         case "about": go("about"); break;
         case "back": go("home"); break;
         case "night": state.night = !state.night; save(KEY.night, state.night); setNight(); break;
         case "reset":
           if (!state.armed) { state.armed = true; a.textContent = "Tap again to clear " + cur.items.length; setTimeout(function () { state.armed = false; var b2 = $('[data-act="reset"]'); if (b2) b2.textContent = "Clear " + curFilter() + " list"; }, 4000); break; }
           var set = curFilter() === "watched" ? watched : saved; cur.items.forEach(function (i) { set.delete(i.ep.n); });
-          save(curFilter() === "watched" ? KEY.watched : KEY.saved, Array.from(set)); state.armed = false; render({ top: true }); toast("Cleared."); break;
+          save(curFilter() === "watched" ? KEY.watched : KEY.saved, Array.from(set)); if (curFilter() === "watched") save(KEY.last, null); state.armed = false; render({ top: true }); toast("Cleared."); break;
       }
     });
     // swipe left / right on the list to move between All, To watch, Watched and Saved (or Saved and Watched in My list)

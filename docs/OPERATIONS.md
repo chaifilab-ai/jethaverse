@@ -100,6 +100,14 @@ Two scripts keep the list fresh. They only write `data/live.json` (the changes) 
 - **Folding the changes in:** the file can grow for years (about 150 bytes per link). When the catalogue is rebuilt from the pipeline, the same links come in through the normal route and `data/live.json` can be emptied.
 - **Safety rules in the scripts:** a new episode number must be at most 40 past the newest known one and come from the official channel or Sony SAB; a video counts as full-length only at 15 minutes or more (17 to 23 is normal) and at most 40; one run in which more than 5% of links answer "gone" is treated as a broken run and changes nothing; a network error never counts against a link.
 
+## Your lists, sharing and backups
+
+Watched, Saved and "where I left off" live only in the phone's browser storage (`gokuldham.watched.v1`, `gokuldham.saved.v1`, `gokuldham.last.v1`); there is no server.
+
+- **Backup code:** `JV1|w=<watched>|s=<saved>|l=<last>`, each list as numbers and ranges (`1-120,130`), made and read by `js/lists.js`. Restore only adds; numbers that are not episodes of the guide are ignored.
+- **Share link:** `https://jethaverse.com/#ep=<n>`. The app opens that episode's sheet on load (the same `ep=` link that has always worked). The base address is `SHARE_BASE` in `js/app.js`.
+- **Continue card:** `continueHTML()` in `js/app.js`, using `nextUnwatched()` from `js/lists.js`.
+
 ## The Best list
 
 `data/best.js` is the one file to edit by hand:

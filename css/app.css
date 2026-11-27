@@ -262,11 +262,24 @@ body.night {
   padding: 0 18px calc(20px + env(safe-area-inset-bottom, 0px)); box-shadow: var(--sh-sheet); max-width: 560px; margin: 0 auto; overscroll-behavior: contain;
 }
 /* the top bar stays in view while the sheet scrolls: the handle, and a close button that is never on the picture */
-.sheet-bar { position: sticky; top: 0; z-index: 3; height: 48px; margin: 0 -18px 2px; padding: 0 8px; display: flex; align-items: center; justify-content: flex-end; background: var(--c-paper); transition: box-shadow .15s; }
+.sheet-bar { position: sticky; top: 0; z-index: 3; height: 48px; margin: 0 -18px 2px; padding: 0 8px; display: flex; align-items: center; justify-content: space-between; background: var(--c-paper); transition: box-shadow .15s; }
 .sheet.scrolled .sheet-bar { box-shadow: 0 1px 0 var(--c-line), 0 8px 12px -8px rgba(34, 32, 30, .28); }
 .grab { position: absolute; left: 50%; top: 9px; width: 44px; height: 5px; margin-left: -22px; border-radius: 3px; background: var(--c-line-strong); }
-.sheet .x { width: var(--tap); height: var(--tap); border: 0; border-radius: 50%; color: var(--c-ink); background: var(--c-sand); box-shadow: inset 0 0 0 4px var(--c-paper); display: grid; place-items: center; }
-.sheet .x:active { background: var(--c-sand-2); }
+.sheet .x, .sheet .sharebtn { width: var(--tap); height: var(--tap); border: 0; border-radius: 50%; color: var(--c-ink); background: var(--c-sand); box-shadow: inset 0 0 0 4px var(--c-paper); display: grid; place-items: center; }
+.sheet .x:active, .sheet .sharebtn:active { background: var(--c-sand-2); }
+.resume-l { margin: 2px 4px 6px; font-weight: var(--w-semi); font-size: var(--t-sm); color: var(--c-ink); }
+.resume-l span { font-weight: 400; color: var(--c-ink-3); }
+.backup { margin: 18px 0 4px; padding: 14px; text-align: left; background: var(--c-paper); border: 1px solid var(--c-line); border-radius: var(--r-md); }
+.backup p { margin: 0 0 10px; font-size: var(--t-sm); color: var(--c-ink-2); line-height: 1.45; }
+.backup .row2 { margin-top: 0; }
+.dlg-scrim { position: fixed; inset: 0; z-index: calc(var(--z-sheet) + 5); display: grid; place-items: center; padding: 16px; background: var(--c-scrim); }
+.dlg { width: 100%; max-width: 420px; padding: 18px; background: var(--c-paper); color: var(--c-ink); border-radius: var(--r-lg); box-shadow: var(--sh-sheet); animation: rise .25s var(--ease-out) both; }
+.dlg h2 { margin: 0 0 6px; font-family: var(--font-display); font-size: var(--t-xl); line-height: 1.2; }
+.dlg p { margin: 0 0 10px; font-size: var(--t-sm); color: var(--c-ink-2); line-height: 1.45; }
+.dlg-code { display: block; width: 100%; box-sizing: border-box; min-height: 96px; margin-bottom: 8px; padding: 10px; border: 1px solid var(--c-line-strong); border-radius: var(--r-sm); background: var(--c-sand); color: var(--c-ink); font: .8125rem/1.4 ui-monospace, Menlo, Consolas, monospace; word-break: break-all; resize: none; }
+.dlg .dlg-note { min-height: 1.3em; margin: 0 0 8px; font-size: var(--t-xs); }
+.dlg .dlg-err { color: var(--c-error); }
+.dlg .row2 { margin-top: 0; }
 .hero { aspect-ratio: 16 / 9; border-radius: var(--r-md); margin: 0 0 12px; }
 .hero .pl { width: 62px; height: 62px; }
 .hero .pl .i { width: 28px; height: 28px; margin-left: 3px; }

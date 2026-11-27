@@ -2,6 +2,17 @@
 
 All notable changes to Gokuldham Guide. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.12.0] — 2026-11-27
+
+Share an episode, pick up where you left off, and back up your lists.
+
+### Added
+
+- **Share an episode.** A share button at the left of the episode sheet's top bar opens the phone's own share sheet (WhatsApp and the rest) with "Episode 881: The Tubelight repair (Taarak Mehta Ka Ooltah Chashmah)" and a link, `https://jethaverse.com/#ep=881`, which opens that exact episode. Where a phone has no share sheet, the text and link are copied instead.
+- **Where I left off.** On the Episodes list (All, nothing searched), a "Continue where you left off, after Episode N" card shows the first episode you have not watched after the last one you marked watched. It moves on as you mark episodes. Lists made before this existed use the furthest episode watched.
+- **Back up and restore your lists.** My list ends with a card ("Your lists live on this phone only"): **Copy backup** shows and copies a short code such as `JV1|w=1-120,130|s=30,50|l=130` (runs of episodes are ranges, so even every episode watched is a few characters); **Restore** takes that code, also when it is inside a pasted message, and adds it to what the phone has; nothing is removed. A code that is not a backup is refused with a clear message. No account and no server: the code is the backup.
+- `js/lists.js` (the code's format and "next unwatched", as plain functions) and `tests/lists.test.js` (9 tests: round trips, ranges, refusing bad codes, the next-episode rule).
+
 ## [3.11.0] — 2026-11-27
 
 Picking characters, reworked after the user's two screenshots (Jethalal + Iyer + Sundar, then adding Goli).

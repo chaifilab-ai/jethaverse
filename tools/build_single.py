@@ -48,13 +48,14 @@ live = json.dumps(json.loads(read("data/live.json")), ensure_ascii=False, separa
     if os.path.exists(os.path.join(ROOT, "data", "live.json")) else "null"
 site = json.loads(read("site.config.json")) if os.path.exists(os.path.join(ROOT, "site.config.json")) else {}
 config = json.dumps({"live": site.get("liveUrl", "")})
-for name, js in (("search", read("js/search.js")), ("ratings", read("js/ratings.js")), ("app", app)):
+for name, js in (("search", read("js/search.js")), ("ratings", read("js/ratings.js")), ("lists", read("js/lists.js")), ("app", app)):
     assert "</script" not in js.lower(), name
 
 body = body.replace('<script src="data/episodes.js"></script>', "")
 body = body.replace('<script src="data/best.js"></script>', "<script>\n" + read("data/best.js") + "\n</script>")
 body = body.replace('<script src="js/search.js"></script>', "<script>\n" + read("js/search.js") + "\n</script>")
 body = body.replace('<script src="js/ratings.js"></script>', "<script>\n" + read("js/ratings.js") + "\n</script>")
+body = body.replace('<script src="js/lists.js"></script>', "<script>\n" + read("js/lists.js") + "\n</script>")
 body = body.replace(
     '<script src="js/app.js" defer></script>',
     "<script>\nwindow.GG_CONFIG = " + config + ";\nwindow.GG_LIVE = " + live + ";\nwindow.GG_STICKERS = " + json.dumps(stickers) +

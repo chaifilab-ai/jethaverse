@@ -58,7 +58,7 @@ jobs:
 
       - name: Tests (a bad change is never saved or published)
         run: |
-          node --test tests/search.test.js tests/live.test.js tests/ratings.test.js tests/best.test.js
+          node --test tests/search.test.js tests/live.test.js tests/ratings.test.js tests/best.test.js tests/lists.test.js
           python -m unittest tests.test_cast tests.test_live
 
       - name: Save what changed
