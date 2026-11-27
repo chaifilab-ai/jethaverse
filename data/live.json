@@ -21,6 +21,18 @@
    ],
    "synopsis": "The Mahila Mandal rushes to his apartment to clean up, set the living room, and prepare refreshments, while Popatlal quickly runs out to Abdul's shop for tea milk.",
    "title": "Popatlal par टूटा मुसीबतों का पहाड़!"
+  },
+  "4879": {
+   "added": "2026-11-27",
+   "aired": "2026-11-27",
+   "cast": [
+    "Jethalal",
+    "Popatlal",
+    "Abdul",
+    "Bagha"
+   ],
+   "synopsis": "The Mahila Mandal rushes to his apartment to clean up, set the living room, and prepare refreshments, while Popatlal quickly runs out to Abdul's shop for tea milk.",
+   "title": "Bagha Par क्यों भड़का Jethalal!"
   }
  },
  "links": {
@@ -77,6 +89,14 @@
     "kind": "full",
     "label": "Sony SAB",
     "minutes": 19
+   },
+   {
+    "added": "2026-11-27",
+    "check": 1,
+    "id": "qCuK9v8XVEY",
+    "kind": "full",
+    "label": "Official channel",
+    "minutes": 21
    }
   ],
   "4861": [
@@ -374,6 +394,22 @@
     "minutes": 0
    }
   ],
+  "4879": [
+   {
+    "added": "2026-11-27",
+    "id": "-zhg1RJ0UZ0",
+    "kind": "highlights",
+    "label": "Official channel",
+    "minutes": 10
+   },
+   {
+    "added": "2026-11-27",
+    "id": "xF3BWQmRioc",
+    "kind": "highlights",
+    "label": "Sony SAB",
+    "minutes": 10
+   }
+  ],
   "601": [
    {
     "added": "2026-11-26",
@@ -470,6 +506,6 @@
    }
   ]
  },
- "updated": "2026-11-27T13:42Z",
+ "updated": "2026-11-27T16:27Z",
  "v": 1
 }
