@@ -1,7 +1,7 @@
 {
  "checked": {
-  "day": "2026-11-27",
-  "links": 919
+  "day": "2026-11-28",
+  "links": 885
  },
  "log": [
   {
@@ -243,6 +243,14 @@
   {
    "d": "2026-11-27",
    "t": "Episode 613: full-length link from Official channel added"
+  },
+  {
+   "d": "2026-11-28",
+   "t": "Episode 614: full-length link from Official channel added"
+  },
+  {
+   "d": "2026-11-28",
+   "t": "Episode 615: full-length link from Official channel added"
   }
  ],
  "need": {},
